@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apkpencatatankeuangan.LoginController">
+   <children>
+      <GridPane layoutX="22.0" layoutY="160.0" prefHeight="153.0" prefWidth="554.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="243.19998779296873" minWidth="10.0" prefWidth="243.19998779296873" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="107.19999999999999" minWidth="10.0" prefWidth="57.80001220703127" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="135.79998779296875" minWidth="10.0" prefWidth="118.60004882812501" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="78.4" minHeight="10.0" prefHeight="76.79999389648438" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="77.60001220703126" minHeight="10.0" prefHeight="26.199993896484372" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="107.9999755859375" minHeight="10.0" prefHeight="43.00000610351563" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="107.9999755859375" minHeight="10.0" prefHeight="89.60001220703126" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <TextField fx:id="username" prefHeight="26.0" prefWidth="293.0" GridPane.columnIndex="1" />
+            <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="43.0" prefWidth="115.0" text="username :">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+               <font>
+                  <Font size="23.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="74.0" prefWidth="204.0" text="password :" textAlignment="CENTER" GridPane.rowIndex="1">
+               <font>
+                  <Font size="23.0" />
+               </font>
+            </Label>
+            <PasswordField fx:id="password" prefHeight="26.0" prefWidth="194.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#btnLoginClick" prefHeight="36.0" prefWidth="63.0" text="login" GridPane.columnIndex="2" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Button>
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#RegisterbtnClick" prefHeight="37.0" prefWidth="62.0" text="Register" GridPane.columnIndex="3" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Button>
+            <Hyperlink fx:id="lbllupa" text="Lupa Password" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+         </children>
+      </GridPane>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="74.0" layoutY="38.0" prefHeight="107.0" prefWidth="450.0" text="Money Flow 1.0" textAlignment="CENTER">
+         <font>
+            <Font name="Tw Cen MT Condensed" size="96.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
