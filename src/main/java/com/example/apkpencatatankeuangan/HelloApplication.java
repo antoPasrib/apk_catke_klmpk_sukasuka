@@ -15,7 +15,6 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
-        primaryStage.setTitle("Money Flow 1.0");
         primaryStage.setScene(new Scene(loadFXML("Login-view")));
         primaryStage.show();
     }
