@@ -1,4 +1,4 @@
-package com.example.apkpencatatankeuangan;
+package com.example.apkpencatatankeuangan.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,7 +33,7 @@ public class LoginController {
         if(username.getText().equals("admin") && password.getText().equals("admin")) {
             lbllupa.setText("Berhasil Login");
             Stage primaryStage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("beranda.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("beranda-view.fxml"));
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.show();

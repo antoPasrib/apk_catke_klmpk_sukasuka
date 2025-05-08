@@ -1,4 +1,4 @@
-package com.example.apkpencatatankeuangan;
+package com.example.apkpencatatankeuangan.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
