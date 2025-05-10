@@ -1,6 +1,7 @@
 module com.example.apkpencatatankeuangan {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
 
 
     opens com.example.apkpencatatankeuangan to javafx.fxml;
