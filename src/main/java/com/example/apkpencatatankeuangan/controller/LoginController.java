@@ -36,20 +36,6 @@ public class LoginController {
 
     @FXML
 
-
-    void btnLoginClick(ActionEvent event) throws IOException {
-        if(username.getText().equals("admin") && password.getText().equals("admin")) {
-            lbllupa.setText("Berhasil Login");
-            Stage primaryStage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("beranda2-view.fxml"));
-            Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        }else {
-            Alert alert = new Alert(Alert.AlertType.ERROR,"Username/Password tidak valid");
-            alert.show();
-        }
-
     protected void btnLoginClick(ActionEvent event) throws IOException {
         Alert alert;
         if (username.getText().equals("admin") && password.getText().equals("admin")) {
@@ -57,7 +43,7 @@ public class LoginController {
             alert.setHeaderText("Information");
             alert.setContentText("Welcome Admin");
             alert.showAndWait();
-            HelloApplication.setRoot("beranda-view",false);
+            HelloApplication.setRoot("beranda2-view",false);
         } else {
             alert = new Alert(Alert.AlertType.ERROR, "Username/Password tidak valid");
             alert.setHeaderText("Error");
