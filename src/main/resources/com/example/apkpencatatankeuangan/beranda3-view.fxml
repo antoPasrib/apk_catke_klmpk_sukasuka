@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apkpencatatankeuangan.controller.BerandaViewController">
+    <children>
+        <GridPane layoutX="-7.0" layoutY="-2.0" prefHeight="405.0" prefWidth="151.0" style="-fx-background-color: #27548A;">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="138.66665649414062" minHeight="10.0" prefHeight="123.33334604899088" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="138.66665649414062" minHeight="0.33331553141275094" prefHeight="10.000017801920592" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="151.0" minHeight="10.0" prefHeight="41.666648864746094" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="151.0" minHeight="10.0" prefHeight="47.33332316080728" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="151.0" minHeight="10.0" prefHeight="41.33333333333337" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="152.0" minHeight="10.0" prefHeight="48.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="121.0" minHeight="1.6666768391926894" prefHeight="1.6666768391926894" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="101.00003051757812" minHeight="10.0" prefHeight="101.00003051757812" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Button fx:id="btnGrafik" mnemonicParsing="false" onAction="#onBtnGrafik" prefHeight="33.0" prefWidth="129.0" text="Grafik" GridPane.rowIndex="5">
+                    <GridPane.margin>
+                        <Insets left="15.0" />
+                    </GridPane.margin>
+                </Button>
+                <Button mnemonicParsing="false" prefHeight="33.0" prefWidth="129.0" style="-fx-background-color: #E55050;" text="LOGOUT" textFill="WHITE" GridPane.rowIndex="7">
+                    <GridPane.margin>
+                        <Insets left="15.0" />
+                    </GridPane.margin>
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Button>
+                <Button mnemonicParsing="false" prefHeight="33.0" prefWidth="129.0" text="Batasan Pengeluaran" GridPane.rowIndex="4">
+                    <GridPane.margin>
+                        <Insets left="15.0" />
+                    </GridPane.margin>
+                </Button>
+                <Label fx:id="username" text="hi!" textFill="WHITE">
+                    <GridPane.margin>
+                        <Insets left="80.0" />
+                    </GridPane.margin>
+                </Label>
+                <ImageView fitHeight="46.0" fitWidth="49.0" pickOnBounds="true" preserveRatio="true">
+                    <GridPane.margin>
+                        <Insets left="20.0" />
+                    </GridPane.margin>
+                </ImageView>
+            </children>
+        </GridPane>
+        <TableView fx:id="table" layoutX="153.0" layoutY="196.0" prefHeight="193.0" prefWidth="433.0">
+            <columns>
+                <TableColumn fx:id="Jenis_Transaksi" prefWidth="116.66664123535156" text="Jenis Transaksi" />
+                <TableColumn fx:id="Jumlah" prefWidth="159.3333740234375" text="Jumlah" />
+                <TableColumn fx:id="Kategori" prefWidth="156.66665649414062" text="Kategori" />
+            </columns>
+        </TableView>
+        <GridPane layoutX="153.0" layoutY="8.0" prefHeight="142.0" prefWidth="349.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.33331298828125" minWidth="10.0" prefWidth="176.33331298828125" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.66668701171875" minWidth="10.0" prefWidth="173.66668701171875" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="47.33334032694499" minHeight="10.0" prefHeight="47.33334032694499" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="47.99999300638834" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="47.33332824707033" minHeight="10.0" prefHeight="45.33334350585939" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jenis Transaksi" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jumlah" GridPane.rowIndex="1" />
+                <TextField fx:id="txtJumlah" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Kategori" GridPane.rowIndex="2" />
+                <ChoiceBox fx:id="cbTransaksi" prefHeight="25.0" prefWidth="189.0" GridPane.columnIndex="1" />
+                <ChoiceBox fx:id="cbKategori" prefHeight="25.0" prefWidth="189.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            </children>
+        </GridPane>
+        <Button fx:id="btnSimpan" layoutX="263.0" layoutY="156.0" mnemonicParsing="false" onAction="#onBtnSimpanClick" prefHeight="33.0" prefWidth="129.0" text="Simpan" />
+        <Button fx:id="btnHapus" layoutX="409.0" layoutY="156.0" mnemonicParsing="false" onAction="#onBtnHapus" prefHeight="33.0" prefWidth="129.0" text="Hapus" />
+    </children>
+</AnchorPane>
