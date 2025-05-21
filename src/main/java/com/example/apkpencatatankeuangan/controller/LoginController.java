@@ -30,7 +30,12 @@ public class LoginController {
 
     @FXML
     protected void RegisterbtnClick(ActionEvent event) throws IOException {
-        HelloApplication.setRoot("registrasi-view", false);
+        Alert alert;
+        alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText("Informasi");
+        alert.setContentText("Lanjut Ke Halaman Register");
+        alert.show();
+        HelloApplication.setRoot("registrasi-view", true);
     }
 
 

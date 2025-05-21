@@ -4,8 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
-import com.example.apkpencatatankeuangan.controller.DBConnection;
-import com.example.apkpencatatankeuangan.controller.BerandaViewController;
+import com.example.apkpencatatankeuangan.Managers.DBConnection;
 
 import java.net.URL;
 import java.sql.*;
