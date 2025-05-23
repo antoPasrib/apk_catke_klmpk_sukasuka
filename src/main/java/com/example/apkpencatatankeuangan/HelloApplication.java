@@ -1,5 +1,6 @@
 package com.example.apkpencatatankeuangan;
 
+import com.example.apkpencatatankeuangan.controller.SessionManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +17,11 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
         primaryStage.setTitle("Login");
-        primaryStage.setScene(new Scene(loadFXML("beranda-view2"))); // cukup "Login-view"
+        if (SessionManager.getInstance().isLoggedIn()) {
+            primaryStage.setScene(new Scene(loadFXML("Beranda-view2")));
+        } else {
+            primaryStage.setScene(new Scene(loadFXML("login-view")));
+        }
         primaryStage.show();
     }
 
