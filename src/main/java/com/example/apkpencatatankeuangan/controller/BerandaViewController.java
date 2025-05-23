@@ -20,6 +20,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javafx.stage.FileChooser;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+
 public class BerandaViewController implements Initializable {
 
     @FXML
@@ -239,4 +249,49 @@ public class BerandaViewController implements Initializable {
             }
         });
     }
+
+    @FXML
+    public void onDownloadClick(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Simpan Laporan Transaksi");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        fileChooser.setInitialFileName("laporan_transaksi.xlsx");
+
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Transaksi");
+
+                // Header
+                Row headerRow = sheet.createRow(0);
+                String[] headers = {"Tanggal", "Jenis", "Jumlah", "Kategori"};
+                for (int i = 0; i < headers.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                }
+
+                // Isi data
+                for (int i = 0; i < catatanObservableList.size(); i++) {
+                    Catatan catatan = catatanObservableList.get(i);
+                    Row row = sheet.createRow(i + 1);
+                    row.createCell(0).setCellValue(catatan.getTanggal());
+                    row.createCell(1).setCellValue(catatan.getJenis_Transaksi());
+                    row.createCell(2).setCellValue(Double.parseDouble(catatan.getJumlah()));
+                    row.createCell(3).setCellValue(catatan.getKategori());
+                }
+
+                // Simpan ke file
+                FileOutputStream fileOut = new FileOutputStream(file);
+                workbook.write(fileOut);
+                fileOut.close();
+
+                showAlert("Data berhasil disimpan ke Excel.");
+            } catch (IOException e) {
+                showAlert("Terjadi kesalahan saat menyimpan file: " + e.getMessage());
+            } catch (Exception e) {
+                showAlert("Gagal menyimpan file: " + e.getMessage());
+            }
+        }
+    }
+
 }

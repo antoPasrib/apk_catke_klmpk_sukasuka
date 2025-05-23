@@ -2,7 +2,7 @@ module com.example.apkpencatatankeuangan {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
-    requires java.desktop;
+    requires org.apache.poi.ooxml;
 
 
     opens com.example.apkpencatatankeuangan to javafx.fxml;
