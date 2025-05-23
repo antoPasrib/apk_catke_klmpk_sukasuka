@@ -9,9 +9,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.text.NumberFormat;
@@ -244,8 +246,11 @@ public class BerandaViewController implements Initializable {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 // User clicked Yes, exit the application
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.close();
                 SessionManager.getInstance().logout();
-                HelloApplication.setRoot("login-view", false);
+                HelloApplication.openViewWithModal("login-view", false);
+
             }
         });
     }
