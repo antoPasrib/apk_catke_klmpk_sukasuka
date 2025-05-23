@@ -48,6 +48,7 @@ public class HelloApplication extends Application {
         stage.initOwner(primaryStage);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.showAndWait();
+
     }
 
     public static void setRoot(String fxmlName, boolean isResizable) {
