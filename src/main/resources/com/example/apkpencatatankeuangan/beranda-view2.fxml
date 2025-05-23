@@ -51,7 +51,7 @@
                         <Insets left="25.0" />
                     </GridPane.margin>
                 </Button>
-                <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="101.0" style="-fx-background-color: #E55050;" text="DOWNLOAD" textFill="WHITE" GridPane.rowIndex="1">
+                <Button mnemonicParsing="false" onAction="#onDownloadClick" prefHeight="25.0" prefWidth="101.0" style="-fx-background-color: #E55050;" text="DOWNLOAD" textFill="WHITE" GridPane.rowIndex="1">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
