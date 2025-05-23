@@ -3,23 +3,20 @@ package com.example.apkpencatatankeuangan.controller;
 import com.example.apkpencatatankeuangan.HelloApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+
 import java.io.IOException;
-import java.security.Key;
+
+import static com.example.apkpencatatankeuangan.HelloApplication.loadFXML;
 
 public class LoginController {
-
+    private static Stage primaryStage;
     @FXML
     private PasswordField password;
 
@@ -27,6 +24,12 @@ public class LoginController {
     private TextField username;
     @FXML
     private Hyperlink lbllupa;
+
+    public static void setRoot(String fxml, boolean isResizeable) {
+        primaryStage.getScene().setRoot(loadFXML(fxml));
+        primaryStage.sizeToScene();
+        primaryStage.setResizable(isResizeable);
+    }
 
     @FXML
     protected void RegisterbtnClick(ActionEvent event) throws IOException {
@@ -40,23 +43,15 @@ public class LoginController {
 
 
     @FXML
-    void btnLoginClick(ActionEvent event) throws IOException {
-        if (username.getText().equals("admin") && password.getText().equals("admin")) {
-            lbllupa.setText("Berhasil Login");
-            Stage primaryStage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("beranda-view.fxml"));
-            Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Username/Password tidak valid");
-            alert.show();
+    void btnLoginClick(ActionEvent event){
+        String user = username.getText();
+        String pass = password.getText();
+        if (user.equals("admin") && pass.equals("admin")) {
+            HelloApplication.openViewWithModal("beranda-view2", false);
+            SessionManager.getInstance().login();
         }
+
 
 
     }
 }
-
-
-
-

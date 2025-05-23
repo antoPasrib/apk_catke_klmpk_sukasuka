@@ -1,14 +1,22 @@
 package com.example.apkpencatatankeuangan.Managers;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import com.example.apkpencatatankeuangan.Data.Catatan;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+
+
 public class DBConnection {
     private static final String DB_URL = "jdbc:sqlite:keuangan.db";
     private static Connection connection;
-    private void DBConnectionManager() {
 
+    private DBConnection() {
     }
+
+
+
     public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
@@ -19,6 +27,7 @@ public class DBConnection {
         }
         return connection;
     }
+
     public static void closeConnection() {
         if (connection != null) {
             try {
@@ -29,3 +38,5 @@ public class DBConnection {
         }
     }
 }
+
+
