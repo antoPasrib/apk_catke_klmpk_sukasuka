@@ -1,138 +1,242 @@
 package com.example.apkpencatatankeuangan.controller;
 
+import com.example.apkpencatatankeuangan.Data.Catatan;
+import com.example.apkpencatatankeuangan.HelloApplication;
+import com.example.apkpencatatankeuangan.Managers.CatatanManager;
+import com.example.apkpencatatankeuangan.controller.SessionManager;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.event.ActionEvent;
 
-public class BerandaViewController {
+import java.net.URL;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-    @FXML
-    private TableView<Transaction> table;
-
-    @FXML
-    private TableColumn<Transaction, String> Jenis_Transaksi;
-
-    @FXML
-    private TableColumn<Transaction, Integer> Jumlah;
+public class BerandaViewController implements Initializable {
 
     @FXML
-    private TableColumn<Transaction, String> Kategori;
+    private TableView<Catatan> table;
 
     @FXML
-    private ChoiceBox<String> cbTransaksi;
+    private TableColumn<Catatan, String> Jenis_Transaksi;
 
     @FXML
-    private ChoiceBox<String> cbKategori;
+    private TableColumn<Catatan, String> Jumlah;
 
     @FXML
-    private TextField txtJumlah;
+    private TableColumn<Catatan, String> Kategori;
 
     @FXML
-    private Button btnSimpan;
+    private TableColumn<Catatan, String> Tanggal;
 
     @FXML
-    private Button btnHapus;
+    private Button btnTambahTransaksi;
 
     @FXML
-    private Button btnGrafik;
-
-    private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
+    private ChoiceBox<String> cdJnsTransaksi;
 
     @FXML
-    public void initialize() {
-        // Inisialisasi kolom tabel
-        Jenis_Transaksi.setCellValueFactory(new PropertyValueFactory<>("jenisTransaksi"));
-        Jumlah.setCellValueFactory(new PropertyValueFactory<>("jumlah"));
-        Kategori.setCellValueFactory(new PropertyValueFactory<>("kategori"));
+    private ChoiceBox<String> cdKategori;
 
-        table.setItems(transactions);
+    @FXML
+    private TextField lblJumlah;
 
-        // Isi pilihan ChoiceBox
-        cbTransaksi.setItems(FXCollections.observableArrayList("Pemasukan", "Pengeluaran"));
-        cbTransaksi.setOnAction(event -> updateKategoriChoiceBox());
+    // Ganti lblTanggal (TextField) jadi DatePicker untuk pemilihan tanggal
+    @FXML
+    private DatePicker lblTanggal;
+
+    @FXML
+    private Label lblPemasukan, lblPengeluaran, lblSisaUang;
+
+    @FXML
+    private Button logOut;
+
+    @FXML
+    private PieChart pieChart;
+
+    @FXML
+    private Label username;
+
+    private ObservableList<Catatan> catatanObservableList;
+    private CatatanManager catatanManager;
+
+    // Format mata uang Indonesia
+    private final NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        username.setText(SessionManager.getInstance().getUsername());
+
+        catatanManager = new CatatanManager();
+        catatanObservableList = FXCollections.observableArrayList(catatanManager.getAllCatatan());
+
+        table.setItems(catatanObservableList);
+
+        Jenis_Transaksi.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getJenis_Transaksi()));
+        Jumlah.setCellValueFactory(data -> {
+            try {
+                double val = Double.parseDouble(data.getValue().getJumlah());
+                return new SimpleStringProperty(rupiahFormat.format(val));
+            } catch (Exception e) {
+                return new SimpleStringProperty(data.getValue().getJumlah());
+            }
+        });
+        Kategori.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getKategori()));
+        Tanggal.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTanggal()));
+
+        // Inisialisasi pilihan jenis transaksi
+        cdJnsTransaksi.setItems(FXCollections.observableArrayList("Pemasukan", "Pengeluaran"));
+
+        cdJnsTransaksi.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null) {
+                cdKategori.setItems(FXCollections.observableArrayList());
+            } else if (newVal.equalsIgnoreCase("Pemasukan")) {
+                cdKategori.setItems(FXCollections.observableArrayList("Gaji", "Bonus"));
+                cdKategori.setValue(null);
+            } else if (newVal.equalsIgnoreCase("Pengeluaran")) {
+                cdKategori.setItems(FXCollections.observableArrayList("Traveling", "Belanja", "Makanan", "Transportasi"));
+                cdKategori.setValue(null);
+            }
+        });
+
+        // Set label teks
+        lblPemasukan.setText("Pemasukan:");
+        lblPengeluaran.setText("Pengeluaran:");
+        lblSisaUang.setText("Sisa Uang:");
+
+        // Format textfield lblJumlah supaya inputan rupiah, tapi tetap bisa input angka biasa
+        lblJumlah.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal.matches("\\d*")) {
+                lblJumlah.setText(newVal.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        updateSummary();
+        updatePieChart();
     }
 
-    private void updateKategoriChoiceBox() {
-        String selectedJenis = cbTransaksi.getValue();
-        if ("Pemasukan".equals(selectedJenis)) {
-            cbKategori.setItems(FXCollections.observableArrayList("Gaji", "Bonus"));
-        } else if ("Pengeluaran".equals(selectedJenis)) {
-            cbKategori.setItems(FXCollections.observableArrayList("Makanan", "Transportasi", "Lainnya"));
-        }
-    }
-
     @FXML
-    void onBtnSimpanClick(ActionEvent event) {
-        String jenisTransaksi = cbTransaksi.getValue();
-        String kategori = cbKategori.getValue();
-        String jumlahText = txtJumlah.getText();
+    private void tambahTransaksi() {
+        LocalDate tanggalSelected = lblTanggal.getValue();
+        String tanggal = tanggalSelected != null ? tanggalSelected.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) : "";
+        String jenis = cdJnsTransaksi.getValue();
+        String kategori = cdKategori.getValue();
+        String jumlahStr = lblJumlah.getText().trim();
 
-        if (jenisTransaksi == null || kategori == null || jumlahText.isEmpty()) {
-            showAlert("Peringatan", "Semua bidang harus diisi!");
+        if (tanggal.isEmpty() || jenis == null || kategori == null || jumlahStr.isEmpty()) {
+            showAlert("Lengkapi semua data terlebih dahulu.");
             return;
         }
 
         try {
-            int jumlah = Integer.parseInt(jumlahText);
-            transactions.add(new Transaction(jenisTransaksi, kategori, jumlah));
-            table.refresh();
-
-            // Reset form
-            cbTransaksi.setValue(null);
-            cbKategori.setValue(null);
-            txtJumlah.clear();
+            double jumlah = Double.parseDouble(jumlahStr);
+            Catatan catatan = new Catatan(0, tanggal, jenis, String.valueOf(jumlah), kategori);
+            if (catatanManager.tambahTransaksi(catatan)) {
+                catatanObservableList.setAll(catatanManager.getAllCatatan());
+                updateSummary();
+                updatePieChart();
+                clearInputFields();
+            } else {
+                showAlert("Gagal menambahkan transaksi.");
+            }
         } catch (NumberFormatException e) {
-            showAlert("Kesalahan", "Jumlah harus berupa angka!");
+            showAlert("Jumlah harus berupa angka.");
         }
     }
 
-    @FXML
-    void onBtnHapus(ActionEvent event) {
-        Transaction selected = table.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            transactions.remove(selected);
-        } else {
-            showAlert("Peringatan", "Pilih transaksi yang ingin dihapus!");
-        }
-    }
-
-    @FXML
-    void onBtnGrafik(ActionEvent event) {
-        // Aksi untuk membuka grafik, tambahkan logika sesuai kebutuhan
-        System.out.println("Tombol Grafik diklik!");
-    }
-
-    private void showAlert(String title, String content) {
+    private void showAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setContentText(content);
+        alert.setTitle("Peringatan");
+        alert.setContentText(msg);
         alert.showAndWait();
     }
 
-    public static class Transaction {
-        private final String jenisTransaksi;
-        private final String kategori;
-        private final int jumlah;
+    private void clearInputFields() {
+        lblTanggal.setValue(null);
+        lblJumlah.clear();
+        cdJnsTransaksi.setValue(null);
+        cdKategori.setItems(FXCollections.observableArrayList());
+    }
 
-        public Transaction(String jenisTransaksi, String kategori, int jumlah) {
-            this.jenisTransaksi = jenisTransaksi;
-            this.kategori = kategori;
-            this.jumlah = jumlah;
+    private void updateSummary() {
+        double pemasukan = 0;
+        double pengeluaran = 0;
+
+        for (Catatan c : catatanObservableList) {
+            double jumlah = 0;
+            try {
+                jumlah = Double.parseDouble(c.getJumlah());
+            } catch (NumberFormatException e) {
+                // Ignore atau set 0 jika error parsing
+                jumlah = 0;
+            }
+            if (c.getJenis_Transaksi().equalsIgnoreCase(Catatan.CATATAN_PEMASUKAN)) {
+                pemasukan += jumlah;
+            } else if (c.getJenis_Transaksi().equalsIgnoreCase(Catatan.CATATAN_PENGELUARAN)) {
+                pengeluaran += jumlah;
+            }
         }
 
-        public String getJenisTransaksi() {
-            return jenisTransaksi;
+        double sisa = pemasukan - pengeluaran;
+
+        // Pastikan ini dipanggil dengan format yang benar
+        lblPemasukan.setText(" " + rupiahFormat.format(pemasukan));
+        lblPengeluaran.setText(" " + rupiahFormat.format(pengeluaran));
+        lblSisaUang.setText(" " + rupiahFormat.format(sisa));
+    }
+
+
+    private void updatePieChart() {
+        double pemasukan = 0;
+        double pengeluaran = 0;
+
+        for (Catatan c : catatanObservableList) {
+            double jumlah = Double.parseDouble(c.getJumlah());
+            if (c.getJenis_Transaksi().equalsIgnoreCase(Catatan.CATATAN_PEMASUKAN)) {
+                pemasukan += jumlah;
+            } else if (c.getJenis_Transaksi().equalsIgnoreCase(Catatan.CATATAN_PENGELUARAN)) {
+                pengeluaran += jumlah;
+            }
         }
 
-        public String getKategori() {
-            return kategori;
-        }
+        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
+                new PieChart.Data("Pemasukan", pemasukan),
+                new PieChart.Data("Pengeluaran", pengeluaran)
+        );
 
-        public int getJumlah() {
-            return jumlah;
-        }
+        pieChart.setData(pieChartData);
+    }
+
+    @FXML
+    private void onActionTambahTransaksi(ActionEvent event) {
+        tambahTransaksi();
+    }
+
+    @FXML
+    private void onActionLogOut(ActionEvent event) {
+        // Create a new alert with type Confirmation
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Exit & Logout Confirmation");
+        alert.setHeaderText("Are you sure you want to exit?");
+        alert.setContentText("Press OK to exit the application.");
+
+        // Add Yes and No buttons to the alert
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        // Show the alert and wait for user response
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                // User clicked Yes, exit the application
+                SessionManager.getInstance().logout();
+                HelloApplication.setRoot("login-view", false);
+            }
+        });
     }
 }

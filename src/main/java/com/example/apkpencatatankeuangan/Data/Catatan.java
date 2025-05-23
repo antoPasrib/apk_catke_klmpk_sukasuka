@@ -9,10 +9,11 @@ public class Catatan {
 
     public Catatan(int id , String tanggal, String jenis_Transaksi, String jumlah, String kategori) {
         this.id = id;
+        Tanggal = tanggal;
         Jenis_Transaksi = jenis_Transaksi;
         Jumlah = jumlah;
         Kategori = kategori;
-        Tanggal = tanggal;
+
     }
 
     //konstanta

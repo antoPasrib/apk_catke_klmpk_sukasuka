@@ -15,35 +15,43 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
-        primaryStage.setScene(new Scene(loadFXML("Login-view")));
-        primaryStage.setFullScreen(true);
+        primaryStage.setTitle("Login");
+        primaryStage.setScene(new Scene(loadFXML("beranda-view2"))); // cukup "Login-view"
         primaryStage.show();
     }
-    private static Parent loadFXML(String fxml) {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxml + ".fxml"));
+
+    public static Parent loadFXML(String fxmlName) {
+        String path = "/com/example/apkpencatatankeuangan/" + fxmlName + ".fxml";
+        System.out.println("Loading FXML from: " + path);
         try {
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(path));
+            if (fxmlLoader.getLocation() == null) {
+                throw new RuntimeException("FXML file not found: " + path);
+            }
             return fxmlLoader.load();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Gagal memuat FXML: " + path);
         }
-        return null;
     }
 
-    public static void setRoot(String fxml, boolean resizable) {
-        primaryStage.getScene().setRoot(loadFXML(fxml));
-        primaryStage.setResizable(resizable);
-        primaryStage.sizeToScene();
-    }
-    public static void main(String[] args) {
-        launch();
-    }
-    public static void openViewWithModal(String fxml, boolean resizable) {
+    public static void openViewWithModal(String fxmlName, boolean isResizable) {
         Stage stage = new Stage();
-        stage.setScene(new Scene(loadFXML(fxml)));
-        stage.setResizable(resizable);
+        stage.setScene(new Scene(loadFXML(fxmlName)));
         stage.sizeToScene();
+        stage.setResizable(isResizable);
         stage.initOwner(primaryStage);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.showAndWait();
+    }
+
+    public static void setRoot(String fxmlName, boolean isResizable) {
+        primaryStage.getScene().setRoot(loadFXML(fxmlName));
+        primaryStage.sizeToScene();
+        primaryStage.setResizable(isResizable);
+    }
+
+    public static void main(String[] args) {
+        launch();
     }
 }
