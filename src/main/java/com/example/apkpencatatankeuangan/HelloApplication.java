@@ -18,7 +18,7 @@ public class HelloApplication extends Application {
         primaryStage = stage;
         primaryStage.setTitle("Login");
         if (SessionManager.getInstance().isLoggedIn()) {
-            primaryStage.setScene(new Scene(loadFXML("Beranda-view2")));
+            primaryStage.setScene(new Scene(loadFXML("Beranda2-view")));
         } else {
             primaryStage.setScene(new Scene(loadFXML("login-view")));
         }

@@ -59,7 +59,7 @@ public class LoginController {
             if (rs.next()){
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.close();
-                HelloApplication.openViewWithModal("beranda-view2",false);
+                HelloApplication.openViewWithModal("beranda2-view",false);
 
             }else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);

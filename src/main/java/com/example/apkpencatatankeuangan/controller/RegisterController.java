@@ -6,11 +6,13 @@ import com.example.apkpencatatankeuangan.HelloApplication;
 import com.example.apkpencatatankeuangan.Managers.DBConnection;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 
 public class RegisterController {
 
@@ -59,7 +61,8 @@ public class RegisterController {
             pstmt.setString(2, password);
             pstmt.executeUpdate();
             showAlert(AlertType.INFORMATION, "Registrasi berhasil!");
-
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.close();
             HelloApplication.openViewWithModal("login-view",false);
         } catch (SQLException e) {
             showAlert(AlertType.ERROR, "Gagal registrasi: " + e.getMessage());
