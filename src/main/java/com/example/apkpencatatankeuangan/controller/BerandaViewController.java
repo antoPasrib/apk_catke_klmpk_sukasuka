@@ -2,6 +2,7 @@ package com.example.apkpencatatankeuangan.controller;
 
 import com.example.apkpencatatankeuangan.Data.Catatan;
 import com.example.apkpencatatankeuangan.HelloApplication;
+import com.example.apkpencatatankeuangan.Managers.BatasanListener;
 import com.example.apkpencatatankeuangan.Managers.BatasanManager;
 import com.example.apkpencatatankeuangan.Managers.CatatanManager;
 import com.example.apkpencatatankeuangan.controller.SessionManager;
@@ -19,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
@@ -26,6 +28,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import java.net.URL;
+import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -109,12 +112,13 @@ public class BerandaViewController implements Initializable {
     private TableColumn<Catatan, Void> colAksi;
     // Format mata uang Indonesia
     private final NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
-
+    private BatasanListener batasanListener;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         username.setText(SessionManager.getInstance().getUsername());
 
         catatanManager = new CatatanManager();
+
         catatanObservableList = FXCollections.observableArrayList(catatanManager.getAllCatatan());
 
         table.setItems(catatanObservableList);
@@ -372,15 +376,15 @@ public class BerandaViewController implements Initializable {
     private void updateSummary() {
         double pemasukan = 0;
         double pengeluaran = 0;
-
+        lblBatasan.setText("Batas Pengeluaran: 0");
         for (Catatan c : catatanObservableList) {
             double jumlah = 0;
             try {
                 jumlah = Double.parseDouble(c.getJumlah());
             } catch (NumberFormatException e) {
-                // Ignore atau set 0 jika error parsing
-                jumlah = 0;
+                jumlah = 0; // Set ke 0 jika gagal parsing
             }
+
             if (c.getJenis_Transaksi().equalsIgnoreCase(Catatan.CATATAN_PEMASUKAN)) {
                 pemasukan += jumlah;
             } else if (c.getJenis_Transaksi().equalsIgnoreCase(Catatan.CATATAN_PENGELUARAN)) {
@@ -388,14 +392,13 @@ public class BerandaViewController implements Initializable {
             }
         }
 
-
         double sisa = pemasukan - pengeluaran;
 
-        // Pastikan ini dipanggil dengan format yang benar
+        // 2. Update semua label dengan format rupiah
         lblPemasukan.setText(" " + rupiahFormat.format(pemasukan));
         lblPengeluaran.setText(" " + rupiahFormat.format(pengeluaran));
         lblSisaUang.setText(" " + rupiahFormat.format(sisa));
-        lblBatasan.setText("  " + rupiahFormat.format(BatasanManager.getBatasPengeluaran()));
+        lblBatasan.setText(" " + rupiahFormat.format(BatasanManager.getBatasPengeluaran()));
     }
 
 
@@ -410,7 +413,19 @@ public class BerandaViewController implements Initializable {
         pieChart.setData(pieChartData);
         pieChart.setTitle("Pie Chart");
     }
+    private void muatUlangBatasan() {
+        try {
+            BatasanManager.loadBatasPengeluaranDariDB();
+            lblBatasan.setText("Rp " + BatasanManager.getBatasPengeluaran());
+        } catch (SQLException e) {
+            System.err.println("Gagal memuat ulang batas: " + e.getMessage());
+        }
+    }
 
+
+    public void setBatasanListener(BatasanListener listener) {
+        this.batasanListener = listener;
+    }
     @FXML
     private void onActionBatasan(ActionEvent event) {
         URL resource = getClass().getResource("/com/example/apkpencatatankeuangan/Batasan_fxml.fxml");
@@ -425,18 +440,25 @@ public class BerandaViewController implements Initializable {
             FXMLLoader loader = new FXMLLoader(resource);
             Parent root = loader.load();
 
+            // Ambil controller dari BatasanView
+            BatasanViewController controller = loader.getController();
+            // Set listener ke method updateSummary() agar reload setelah simpan
+            controller.setBatasanListener(() -> updateSummary());
+
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Atur Batasan");
-            stage.show();
-            updateSummary();
+            stage.initModality(Modality.APPLICATION_MODAL); // Opsional: supaya jadi dialog modal
+            stage.showAndWait(); // Tunggu sampai ditutup sebelum lanjut
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
     @FXML
     private void onActionHapusBatasan(ActionEvent event) {
-        // Konfirmasi dulu
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Konfirmasi Hapus Batasan");
         confirm.setHeaderText(null);
@@ -445,13 +467,23 @@ public class BerandaViewController implements Initializable {
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             BatasanManager.resetBatasPengeluaran();
-            Alert info = new Alert(Alert.AlertType.INFORMATION);
-            info.setTitle("Batasan Dihapus");
-            info.setHeaderText(null);
-            info.setContentText("Batas pengeluaran berhasil dihapus/reset.");
-            info.showAndWait();
+            boolean success = BatasanManager.resetBatasPengeluaranDiDatabase();
 
-            // Update UI jika perlu
+            if (success) {
+                Alert info = new Alert(Alert.AlertType.INFORMATION);
+                info.setTitle("Batasan Dihapus");
+                info.setHeaderText(null);
+                info.setContentText("Batas pengeluaran berhasil dihapus/reset.");
+                info.showAndWait();
+
+                updateSummary();
+            } else {
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setTitle("Gagal Menghapus");
+                error.setHeaderText(null);
+                error.setContentText("Terjadi kesalahan saat menghapus batas pengeluaran.");
+                error.showAndWait();
+            }
         }
     }
 
