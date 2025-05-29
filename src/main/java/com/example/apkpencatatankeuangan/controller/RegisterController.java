@@ -63,9 +63,13 @@ public class RegisterController {
             showAlert(AlertType.INFORMATION, "Registrasi berhasil!");
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
+            DBConnection.closeConnection();
             HelloApplication.openViewWithModal("login-view",false);
         } catch (SQLException e) {
             showAlert(AlertType.ERROR, "Gagal registrasi: " + e.getMessage());
+        }
+        finally {
+            DBConnection.closeConnection();
         }
     }
 

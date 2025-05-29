@@ -59,8 +59,8 @@ public class LoginController {
             if (rs.next()){
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.close();
-                HelloApplication.openViewWithModal("beranda2-view",false);
-
+                HelloApplication.setRoot("beranda2-view",true);
+                HelloApplication.openViewWithModal("beranda2-view", true);
             }else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("Login Failed");
@@ -73,6 +73,9 @@ public class LoginController {
             alert.setContentText("Terjadi Kesalahan");
             e.printStackTrace();
 
+        }
+        finally {
+            DBConnection.closeConnection();
         }
         }
 }
