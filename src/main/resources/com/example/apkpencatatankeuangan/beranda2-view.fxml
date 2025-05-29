@@ -4,6 +4,7 @@
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -27,10 +28,10 @@
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="198.33333333333331" minHeight="10.0" prefHeight="188.6666717529297" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="198.33333333333331" minHeight="10.0" prefHeight="188.6666717529297" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="171.55553690592444" minHeight="0.0" prefHeight="95.99999491373694" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="151.0" minHeight="10.0" prefHeight="41.666648864746094" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="151.0" minHeight="10.0" prefHeight="47.33332316080728" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="198.33333333333331" minHeight="10.0" prefHeight="131.0000203450521" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="171.55553690592444" minHeight="0.0" prefHeight="72.33331298828125" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="151.0" minHeight="10.0" prefHeight="66.33335367838544" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="151.0" minHeight="10.0" prefHeight="79.00000000000006" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="151.0" minHeight="10.0" prefHeight="41.33333333333337" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="152.0" minHeight="10.0" prefHeight="48.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="121.0" minHeight="1.6666768391926894" prefHeight="1.6666768391926894" vgrow="SOMETIMES" />
@@ -51,26 +52,43 @@
                         <Insets left="25.0" />
                     </GridPane.margin>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#onDownloadClick" prefHeight="25.0" prefWidth="101.0" style="-fx-background-color: #E55050;" text="DOWNLOAD" textFill="WHITE" GridPane.rowIndex="1">
+                <Button mnemonicParsing="false" onAction="#onDownloadClick" prefHeight="33.0" prefWidth="112.0" style="-fx-background-color: #BE5B50;" text="DOWNLOAD" textFill="WHITE" GridPane.rowIndex="4">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                     <GridPane.margin>
-                        <Insets left="23.0" />
+                        <Insets left="15.0" />
                     </GridPane.margin>
                 </Button>
+            <Button mnemonicParsing="false" onAction="#onActionBatasan" prefHeight="33.0" prefWidth="112.0" style="-fx-background-color: #483AA0;" text="Tambah Batasan" textFill="WHITE" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="15.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#onActionHapusBatasan" prefHeight="33.0" prefWidth="112.0" style="-fx-background-color: #7F55B1;" text="Hapus Batasan" textFill="WHITE" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="15.0" />
+               </GridPane.margin>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Button>
             </children>
         </GridPane>
         <TableView fx:id="table" layoutX="158.0" layoutY="328.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="385.0" prefWidth="619.0">
             <columns>
                 <TableColumn fx:id="Tanggal" prefWidth="118.0" text="Tanggal" />
-                <TableColumn fx:id="Jenis_Transaksi" prefWidth="167.3332977294922" text="Jenis Transaksi" />
-                <TableColumn fx:id="Jumlah" prefWidth="180.66665649414062" text="Jumlah" />
-                <TableColumn fx:id="Kategori" prefWidth="152.0" text="Kategori" />
+                <TableColumn fx:id="Jenis_Transaksi" prefWidth="105.99993896484375" text="Jenis Transaksi" />
+                <TableColumn fx:id="Jumlah" prefWidth="131.33322143554688" text="Jumlah" />
+                <TableColumn fx:id="Kategori" prefWidth="114.666748046875" text="Kategori" />
+            <TableColumn fx:id="editColumn" prefWidth="163.333251953125" />
             </columns>
         </TableView>
         <PieChart fx:id="pieChart" layoutX="806.0" layoutY="335.0" prefHeight="346.0" prefWidth="407.0" />
-        <GridPane layoutX="160.0" layoutY="173.0" prefHeight="117.0" prefWidth="1090.0">
+        <GridPane layoutX="721.0" layoutY="38.0" prefHeight="244.0" prefWidth="1090.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="356.33331298828125" minWidth="10.0" prefWidth="260.0" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="356.33331298828125" minWidth="0.0" prefWidth="25.0" />
@@ -81,7 +99,9 @@
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="289.00004069010424" minWidth="10.0" prefWidth="260.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="186.33333587646484" minHeight="10.0" prefHeight="150.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="117.00000762939453" minHeight="6.666676839192704" prefHeight="49.33333333333333" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="146.66665649414062" minHeight="10.0" prefHeight="150.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <GridPane prefHeight="117.0" prefWidth="240.0" style="-fx-border-color: transparent transparent transparent #255F38; -fx-border-width: 5; -fx-border-radius: 5; -fx-border-style: right; -fx-background-color: #F2F2F2; -fx-background-radius: 5;">
@@ -143,7 +163,7 @@
                         </Label>
                     </children>
                 </GridPane>
-                <GridPane prefHeight="117.0" prefWidth="286.0" style="-fx-border-color: transparent transparent transparent #E9A319; -fx-border-width: 5; -fx-border-radius: 5; -fx-border-style: right; -fx-background-color: #F2F2F2; -fx-background-radius: 5;" GridPane.columnIndex="4">
+                <GridPane prefHeight="117.0" prefWidth="286.0" style="-fx-border-color: transparent transparent transparent #E9A319; -fx-border-width: 5; -fx-border-radius: 5; -fx-border-style: right; -fx-background-color: #F2F2F2; -fx-background-radius: 5;" GridPane.rowIndex="2">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="245.99999999999997" minWidth="10.0" prefWidth="245.99999999999997" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="147.66666666666669" minWidth="0.0" prefWidth="0.0" />
@@ -171,10 +191,10 @@
                         </Label>
                     </children>
                 </GridPane>
-                <GridPane prefHeight="117.0" prefWidth="210.0" style="-fx-border-color: transparent transparent transparent #7F55B1; -fx-border-width: 5; -fx-border-radius: 5; -fx-border-style: right; -fx-background-color: #F2F2F2; -fx-background-radius: 5;" GridPane.columnIndex="6">
+                <GridPane prefHeight="117.0" prefWidth="210.0" style="-fx-border-color: transparent transparent transparent #7F55B1; -fx-border-width: 5; -fx-border-radius: 5; -fx-border-style: right; -fx-background-color: #F2F2F2; -fx-background-radius: 5;" GridPane.columnIndex="2" GridPane.rowIndex="2">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="174.66665649414062" minWidth="10.0" prefWidth="117.33331807454428" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="147.66666666666669" minWidth="10.0" prefWidth="144.00001525878906" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="244.66666666666669" minWidth="10.0" prefWidth="244.66666666666669" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="147.66666666666669" minWidth="0.0" prefWidth="0.0" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints maxHeight="34.333343505859375" minHeight="10.0" prefHeight="21.666671752929688" vgrow="SOMETIMES" />
@@ -189,19 +209,18 @@
                                 <Font size="16.0" />
                             </font>
                         </Text>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Rp. " GridPane.rowIndex="1">
-                            <GridPane.margin>
-                                <Insets left="5.0" />
-                            </GridPane.margin>
-                            <font>
-                                <Font size="20.0" />
-                            </font>
-                        </Text>
+                  <Label fx:id="lblBatasan" prefHeight="30.0" prefWidth="281.0" text="Rp. -" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
                     </children>
                 </GridPane>
             </children>
         </GridPane>
-        <Text layoutX="808.0" layoutY="323.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Pie Chart :" />
         <MenuBar layoutX="-2.0" prefHeight="25.0" prefWidth="132.1">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
@@ -222,62 +241,72 @@
             </menus>
         </MenuBar>
       <Text layoutX="188.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="68.66666666666669" />
-      <GridPane layoutX="217.0" layoutY="40.0" prefHeight="120.0" prefWidth="1010.0">
+      <GridPane layoutX="141.0" layoutY="15.0" prefHeight="225.0" prefWidth="495.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" prefWidth="138.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="0.0" prefWidth="138.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" prefWidth="138.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" prefWidth="138.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="0.0" prefWidth="0.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="330.0" minWidth="0.0" prefWidth="330.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="28.66668701171875" minHeight="7.333343505859375" prefHeight="28.66668701171875" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="75.99998982747397" minHeight="10.0" prefHeight="54.66664632161459" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="29.77777099609375" minHeight="0.33333587646484375" prefHeight="10.888877868652344" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="66.22222900390625" minHeight="10.0" prefHeight="51.55556742350261" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="75.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="75.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="75.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="75.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tanggal :">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tanggal " GridPane.rowIndex="1">
                <GridPane.margin>
-                  <Insets left="100.0" />
+                  <Insets left="50.0" />
                </GridPane.margin>
             </Text>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jenis Transaksi : " GridPane.columnIndex="1">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jenis Transaksi" GridPane.rowIndex="2">
                <GridPane.margin>
-                  <Insets left="75.0" />
+                  <Insets left="50.0" />
                </GridPane.margin>
             </Text>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jumlah :" GridPane.columnIndex="2">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Jumlah " GridPane.rowIndex="3">
                <GridPane.margin>
-                  <Insets left="100.0" />
+                  <Insets left="50.0" />
                </GridPane.margin>
             </Text>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Kategori :" GridPane.columnIndex="3">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Kategori " GridPane.rowIndex="4">
                <GridPane.margin>
-                  <Insets left="100.0" />
+                  <Insets left="50.0" />
                </GridPane.margin>
             </Text>
-            <DatePicker fx:id="lblTanggal" prefHeight="25.0" prefWidth="261.0" GridPane.rowIndex="1">
+            <DatePicker fx:id="lblTanggal" prefHeight="25.0" prefWidth="310.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" right="10.0" />
                </GridPane.margin>
             </DatePicker>
-            <TextField fx:id="lblJumlah" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <TextField fx:id="lblJumlah" GridPane.columnIndex="2" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets left="10.0" right="10.0" />
                </GridPane.margin>
             </TextField>
-              <Button fx:id="btnTambahTransaksi" mnemonicParsing="false" onAction="#onActionTambahTransaksi" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #2ECC71; -fx-background-radius: 8; -fx-font-weight: bold;" text="+ Tambah Transaksi" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <ChoiceBox fx:id="cdJnsTransaksi" prefHeight="25.0" prefWidth="261.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <ChoiceBox fx:id="cdJnsTransaksi" prefHeight="25.0" prefWidth="310.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="10.0" right="10.0" />
                </GridPane.margin>
             </ChoiceBox>
-            <ChoiceBox fx:id="cdKategori" prefHeight="25.0" prefWidth="313.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+            <ChoiceBox fx:id="cdKategori" prefHeight="25.0" prefWidth="313.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
                <GridPane.margin>
                   <Insets left="10.0" right="10.0" />
                </GridPane.margin>
             </ChoiceBox>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Masukan Transaksi :" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text=":" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text=":" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text=":" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text=":" GridPane.columnIndex="1" GridPane.rowIndex="4" />
          </children>
       </GridPane>
+        <Button fx:id="btnTambahTransaksi" layoutX="257.0" layoutY="246.0" mnemonicParsing="false" onAction="#onActionTambahTransaksi" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #2ECC71; -fx-background-radius: 8; -fx-font-weight: bold;" text="+ Tambah Transaksi" textFill="WHITE" />
+      <Button fx:id="btnBersihkan" layoutX="453.0" layoutY="246.0" mnemonicParsing="false" onAction="#handleBersihkan" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #F7AD45; -fx-background-radius: 8; -fx-font-weight: bold;" text="Bersihkan" textFill="WHITE" />
+      <DatePicker fx:id="datePickerFrom" layoutX="157.0" layoutY="303.0" prefHeight="25.0" prefWidth="163.0" promptText="Dari tanggal" />
+      <DatePicker fx:id="datePickerTo" layoutX="317.0" layoutY="303.0" prefHeight="19.0" prefWidth="155.0" promptText="Sampai tanggal" />
+      <Button layoutX="468.0" layoutY="303.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Cari" />
+      <ComboBox fx:id="comboKategoriFilter" layoutX="628.0" layoutY="304.0" prefWidth="150.0" />
     </children>
 </AnchorPane>
