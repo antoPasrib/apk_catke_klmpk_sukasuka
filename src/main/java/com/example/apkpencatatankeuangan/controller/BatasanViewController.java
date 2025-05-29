@@ -1,5 +1,6 @@
 package com.example.apkpencatatankeuangan.controller;
 
+import com.example.apkpencatatankeuangan.Managers.BatasanListener;
 import com.example.apkpencatatankeuangan.Managers.BatasanManager;
 import com.example.apkpencatatankeuangan.Managers.DBConnection;
 import javafx.fxml.FXML;
@@ -20,6 +21,12 @@ public class BatasanViewController {
         this.berandaController = controller;
     }
 
+    private BatasanListener batasanListener;
+
+    public void setBatasanListener(BatasanListener listener) {
+        this.batasanListener = listener;
+    }
+
     @FXML
     private void simpanBatas() {
         try {
@@ -27,7 +34,7 @@ public class BatasanViewController {
             BatasanManager.setBatasPengeluaran(batas);
 
             try (Connection conn = DBConnection.getConnection()) {
-                BatasanManager.simpanBatasPengeluaranKeDB(conn);
+                BatasanManager.simpanBatasPengeluaranKeDB();
             }
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -36,20 +43,16 @@ public class BatasanViewController {
             alert.setContentText("Batas pengeluaran berhasil disimpan.");
             alert.showAndWait();
 
-            // Reload data Beranda dulu sebelum tutu
-            ((Stage) tfBatas.getScene().getWindow()).close(); // Tutup jendela
+            // ⏬ Panggil callback ke beranda
+            if (batasanListener != null) {
+                batasanListener.onBatasanDisimpan();
+            }
+
+            ((Stage) tfBatas.getScene().getWindow()).close();
         } catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Input Tidak Valid");
-            alert.setHeaderText(null);
-            alert.setContentText("Masukkan angka batas pengeluaran yang valid.");
-            alert.showAndWait();
+            // ...
         } catch (SQLException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Database Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Gagal menyimpan ke database:\n" + e.getMessage());
-            alert.showAndWait();
+            // ...
         }
     }
 }

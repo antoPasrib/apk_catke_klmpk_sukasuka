@@ -83,18 +83,11 @@ public class CatatanManager {
             pstmt.setInt(5, catatan.getId());
 
             int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("Transaksi berhasil diupdate");
-            }
             return affectedRows > 0;
         } catch (SQLException e) {
             System.err.println("Gagal mengupdate transaksi: " + e.getMessage());
             return false;
-        } catch (NumberFormatException e) {
-            System.err.println("Jumlah harus berupa angka: " + e.getMessage());
-            return false;
         }
-
     }
 
     public boolean deleteCatatan(String id) {
@@ -104,29 +97,23 @@ public class CatatanManager {
 
             pstmt.setInt(1, Integer.parseInt(id));
             int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Transaksi berhasil dihapus");
-                return true;
-            }
+            return rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Gagal menghapus transaksi: " + e.getMessage());
-        } catch (NumberFormatException e) {
-            System.err.println("ID tidak valid: " + e.getMessage());
         }
         return false;
     }
+
     public Map<String, Double> getTotalPerKategori() {
         Map<String, Double> data = new HashMap<>();
-        String sql = "SELECT kategori, SUM(CAST(jumlah AS REAL)) as total FROM transaksi GROUP BY kategori";
+        String sql = "SELECT kategori, SUM(jumlah) as total FROM transaksi GROUP BY kategori";
 
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                String kategori = rs.getString("kategori");
-                double total = rs.getDouble("total");
-                data.put(kategori, total);
+                data.put(rs.getString("kategori"), rs.getDouble("total"));
             }
 
         } catch (SQLException e) {
@@ -135,6 +122,7 @@ public class CatatanManager {
 
         return data;
     }
+
     public List<Catatan> getCatatanByDateRange(String fromDate, String toDate) {
         List<Catatan> list = new ArrayList<>();
         String sql = "SELECT * FROM transaksi WHERE tanggal BETWEEN ? AND ? ORDER BY tanggal";
@@ -144,7 +132,6 @@ public class CatatanManager {
 
             pstmt.setString(1, fromDate);
             pstmt.setString(2, toDate);
-
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -152,7 +139,7 @@ public class CatatanManager {
                         rs.getInt("id"),
                         rs.getString("tanggal"),
                         rs.getString("jenis_transaksi"),
-                        rs.getString("jumlah"),
+                        String.valueOf(rs.getDouble("jumlah")),
                         rs.getString("kategori")
                 ));
             }
@@ -162,6 +149,7 @@ public class CatatanManager {
 
         return list;
     }
+
     public List<Catatan> getCatatanByFilter(String dari, String sampai, String kategori) {
         List<Catatan> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM transaksi WHERE 1=1");
@@ -193,7 +181,7 @@ public class CatatanManager {
                         rs.getInt("id"),
                         rs.getString("tanggal"),
                         rs.getString("jenis_transaksi"),
-                        rs.getString("jumlah"),
+                        String.valueOf(rs.getDouble("jumlah")),
                         rs.getString("kategori")
                 ));
             }
@@ -204,8 +192,4 @@ public class CatatanManager {
 
         return list;
     }
-
-
-
-
 }
