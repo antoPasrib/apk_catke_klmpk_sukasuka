@@ -70,14 +70,17 @@ public class SessionManager implements Serializable {
 
 
     private void saveSession() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new
-                FileOutputStream(SESSION_FILE))) {
+        System.out.println("Saving session...");
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SESSION_FILE))) {
             oos.writeObject(this);
+            System.out.println("Session saved.");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }
+
+
+}
     public String getUsername() {
         return username;
     }
@@ -87,19 +90,22 @@ public class SessionManager implements Serializable {
         return isLoggedIn;
     }
     // Method to simulate login
-    public void login() {
-        Date date = new Date();
-        LocalDate myObj = LocalDate.now();
-        this.date = myObj;
-        isLoggedIn = true;
-        username = "admin";
-        password = "admin";
+    public void login(String username, String password) {
+        this.date = LocalDate.now();
+        this.isLoggedIn = true;
+        this.username = username;
+        this.password = password;
         saveSession();
     }
+
     // Method to simulate logout
     public void logout() {
-        isLoggedIn = false;
+        this.isLoggedIn = false;
+        this.username = null;
+        this.password = null;
+        this.date = null;
         saveSession();
     }
+
 
 }

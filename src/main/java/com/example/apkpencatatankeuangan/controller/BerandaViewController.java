@@ -357,7 +357,7 @@ public class BerandaViewController implements Initializable {
 
 
     private void showAlert(String msg) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Peringatan");
         alert.setContentText(msg);
         alert.showAndWait();
