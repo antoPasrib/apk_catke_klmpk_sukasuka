@@ -43,17 +43,27 @@ public class BatasanViewController {
             alert.setContentText("Batas pengeluaran berhasil disimpan.");
             alert.showAndWait();
 
-            // ⏬ Panggil callback ke beranda
+            // Panggil listener agar Beranda bisa update label
             if (batasanListener != null) {
                 batasanListener.onBatasanDisimpan();
             }
 
             ((Stage) tfBatas.getScene().getWindow()).close();
         } catch (NumberFormatException e) {
-            // ...
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Masukkan angka yang valid untuk batas pengeluaran.");
+            alert.showAndWait();
         } catch (SQLException e) {
-            // ...
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Database Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Terjadi kesalahan saat menyimpan ke database.");
+            alert.showAndWait();
+            e.printStackTrace();
         }
     }
+
 }
 

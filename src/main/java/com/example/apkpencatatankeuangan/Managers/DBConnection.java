@@ -12,11 +12,12 @@ import java.util.List;
 public class DBConnection {
     private static final String USER = "root";
     private static final String PASSWORD = "";
-    private static final String DB_URL = "jdbc:sqlite:keuangan.db";
+    private static final String DB_URL = "jdbc:sqlite:keuangan.db?busy_timeout=5000";
     private static Connection connection;
 
     private DBConnection() {
     }
+
 
 
 
