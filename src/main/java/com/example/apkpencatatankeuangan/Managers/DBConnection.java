@@ -6,9 +6,6 @@ import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-
-
 public class DBConnection {
     private static final String USER = "root";
     private static final String PASSWORD = "";
@@ -17,10 +14,7 @@ public class DBConnection {
 
     private DBConnection() {
     }
-
-
-
-
+    
     public static Connection getConnection() throws SQLException {
         try {
             if (connection == null || connection.isClosed()) {
