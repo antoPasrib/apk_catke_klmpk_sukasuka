@@ -51,7 +51,7 @@ public class CatatanManager {
 
     public ArrayList<Catatan> getAllCatatan() {
         ArrayList<Catatan> listCatatan = new ArrayList<>();
-        String sql = "SELECT * FROM transaksi";
+        String sql = "SELECT * FROM transaksi ";
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {

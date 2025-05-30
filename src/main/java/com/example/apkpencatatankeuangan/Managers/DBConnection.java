@@ -14,7 +14,7 @@ public class DBConnection {
 
     private DBConnection() {
     }
-    
+
     public static Connection getConnection() throws SQLException {
         try {
             if (connection == null || connection.isClosed()) {

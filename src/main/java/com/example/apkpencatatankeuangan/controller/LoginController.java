@@ -47,6 +47,7 @@ public class LoginController {
 
     @FXML
     void btnLoginClick(ActionEvent event){
+
         String inputUsername = username.getText();
         String inputPassword = password.getText();
         String sql = "select * from users where username=? and password=?";
@@ -56,12 +57,15 @@ public class LoginController {
             stmt.setString(2,inputPassword);
 
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
+                // Set session with actual logged-in user
+                SessionManager.getInstance().login(inputUsername, inputPassword);
+
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.close();
-                HelloApplication.openViewWithModal("beranda-view2",false);
+                HelloApplication.setRoot("beranda2-view", true);
 
-            }else {
+        }else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("Login Failed");
                 alert.setContentText("Username or Password is incorrect");
@@ -73,6 +77,9 @@ public class LoginController {
             alert.setContentText("Terjadi Kesalahan");
             e.printStackTrace();
 
+        }
+        finally {
+            DBConnection.closeConnection();
         }
         }
 }
