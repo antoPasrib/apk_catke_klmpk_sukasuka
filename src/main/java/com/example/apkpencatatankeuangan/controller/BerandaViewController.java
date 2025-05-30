@@ -122,14 +122,14 @@ public class BerandaViewController implements Initializable {
         catatanObservableList = FXCollections.observableArrayList(catatanManager.getAllCatatan());
 
         table.setItems(catatanObservableList);
-// Listener untuk filter tanggal dari DatePicker
-        datePickerFrom.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
-        datePickerTo.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
+
+//        datePickerFrom.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
+//        datePickerTo.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
 
 // Listener untuk filter kategori dari ComboBox
-        comboKategoriFilter.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
+//        comboKategoriFilter.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
 
-        // Kolom Edit + Hapus dalam 1 kolom
+
         Callback<TableColumn<Catatan, Void>, TableCell<Catatan, Void>> cellFactory = new Callback<>() {
             @Override
             public TableCell<Catatan, Void> call(final TableColumn<Catatan, Void> param) {
@@ -315,44 +315,27 @@ public class BerandaViewController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleSearchByDate() {
-        if (datePickerFrom.getValue() == null || datePickerTo.getValue() == null) {
-            // Bisa kasih alert bahwa tanggal harus diisi
-            System.out.println("Tanggal dari dan sampai harus diisi");
-            return;
-        }
+//    @FXML
+//    private void handleSearchByDate() {
+//        if (datePickerFrom.getValue() == null || datePickerTo.getValue() == null) {
+//            // Bisa kasih alert bahwa tanggal harus diisi
+//            System.out.println("Tanggal dari dan sampai harus diisi");
+//            return;
+//        }
+//
+//        String fromDate = datePickerFrom.getValue().toString(); // format yyyy-MM-dd
+//        String toDate = datePickerTo.getValue().toString();
+//
+//        List<Catatan> hasilCari = catatanManager.getCatatanByDateRange(fromDate, toDate);
+//
+//        catatanObservableList.clear();
+//        catatanObservableList.addAll(hasilCari);
+//
+//        // Update PieChart dan summary jika perlu
+//        updatePieChart();
+//        updateSummary();
+//    }
 
-        String fromDate = datePickerFrom.getValue().toString(); // format yyyy-MM-dd
-        String toDate = datePickerTo.getValue().toString();
-
-        List<Catatan> hasilCari = catatanManager.getCatatanByDateRange(fromDate, toDate);
-
-        catatanObservableList.clear();
-        catatanObservableList.addAll(hasilCari);
-
-        // Update PieChart dan summary jika perlu
-        updatePieChart();
-        updateSummary();
-    }
-    private void filterData() {
-        String fromDate = null;
-        String toDate = null;
-
-        if (datePickerFrom.getValue() != null && datePickerTo.getValue() != null) {
-            fromDate = datePickerFrom.getValue().toString();
-            toDate = datePickerTo.getValue().toString();
-        }
-        String kategori = comboKategoriFilter.getValue();
-
-        List<Catatan> hasilCari = catatanManager.getCatatanByFilter(fromDate, toDate, kategori);
-
-        catatanObservableList.clear();
-        catatanObservableList.addAll(hasilCari);
-
-        updatePieChart();
-        updateSummary();
-    }
 
 
 
@@ -413,19 +396,9 @@ public class BerandaViewController implements Initializable {
         pieChart.setData(pieChartData);
         pieChart.setTitle("Pie Chart");
     }
-    private void muatUlangBatasan() {
-        try {
-            BatasanManager.loadBatasPengeluaranDariDB();
-            lblBatasan.setText("Rp " + BatasanManager.getBatasPengeluaran());
-        } catch (SQLException e) {
-            System.err.println("Gagal memuat ulang batas: " + e.getMessage());
-        }
-    }
 
 
-    public void setBatasanListener(BatasanListener listener) {
-        this.batasanListener = listener;
-    }
+
     @FXML
     private void onActionBatasan(ActionEvent event) {
         URL resource = getClass().getResource("/com/example/apkpencatatankeuangan/Batasan_fxml.fxml");
@@ -444,6 +417,7 @@ public class BerandaViewController implements Initializable {
             BatasanViewController controller = loader.getController();
             // Set listener ke method updateSummary() agar reload setelah simpan
             controller.setBatasanListener(() -> updateSummary());
+
 
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
@@ -466,22 +440,23 @@ public class BerandaViewController implements Initializable {
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            BatasanManager.resetBatasPengeluaran();
             boolean success = BatasanManager.resetBatasPengeluaranDiDatabase();
 
             if (success) {
+                BatasanManager.resetBatasPengeluaranDiDatabase(); // Setel nilai ke 0 di memori
+
                 Alert info = new Alert(Alert.AlertType.INFORMATION);
                 info.setTitle("Batasan Dihapus");
                 info.setHeaderText(null);
                 info.setContentText("Batas pengeluaran berhasil dihapus/reset.");
                 info.showAndWait();
 
-                updateSummary();
+                updateSummary(); // refresh tampilan
             } else {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Gagal Menghapus");
                 error.setHeaderText(null);
-                error.setContentText("Terjadi kesalahan saat menghapus batas pengeluaran.");
+                error.setContentText("Terjadi kesalahan saat menghapus batas pengeluaran dari database.");
                 error.showAndWait();
             }
         }
@@ -492,29 +467,40 @@ public class BerandaViewController implements Initializable {
 
     @FXML
     private void onActionTambahTransaksi(ActionEvent event) {
-        // Ambil input dari form
         String jenis = cdJnsTransaksi.getValue();
         String jumlahStr = lblJumlah.getText();
 
-        if (jenis != null && jenis.equalsIgnoreCase("Pengeluaran")) {
-            try {
-                double jumlah = Double.parseDouble(jumlahStr);
-                if (jumlah > BatasanManager.getBatasPengeluaran()) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Peringatan Pengeluaran");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Pengeluaran melebihi batas yang ditentukan!");
-                    alert.showAndWait();
-                    return; // Stop proses penyimpanan
-                }
-            } catch (NumberFormatException e) {
-                showAlert("Jumlah harus berupa angka.");
-                return;
-            }
+        // Validasi input jenis transaksi dan jumlah
+        if (jenis == null || jumlahStr == null || jumlahStr.isEmpty()) {
+            showAlert("Jenis transaksi dan jumlah harus diisi.");
+            return;
         }
 
-        tambahTransaksi();
+        double batasPengeluaran = BatasanManager.getBatasPengeluaran();
+
+        try {
+            double jumlah = Double.parseDouble(jumlahStr);
+
+            // Jika batas pengeluaran belum diatur (nilai default 0), izinkan transaksi
+            if (jenis.equalsIgnoreCase("Pengeluaran") && batasPengeluaran > 0 && jumlah > batasPengeluaran) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Peringatan Pengeluaran");
+                alert.setHeaderText(null);
+                alert.setContentText("Pengeluaran melebihi batas yang ditentukan!\nBatas: " +
+                        rupiahFormat.format(batasPengeluaran));
+                alert.showAndWait();
+                return; // Stop proses penyimpanan
+            }
+
+            // Jika lolos validasi, lanjut tambah transaksi
+            tambahTransaksi();
+
+        } catch (NumberFormatException e) {
+            showAlert("Jumlah harus berupa angka.");
+        }
     }
+
+
 
 
     @FXML
