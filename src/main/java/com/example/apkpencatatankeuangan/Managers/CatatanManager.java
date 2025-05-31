@@ -4,6 +4,8 @@ import com.example.apkpencatatankeuangan.Data.Catatan;
 import com.example.apkpencatatankeuangan.controller.SessionManager;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -134,58 +136,83 @@ public class CatatanManager {
         return data;
     }
 
-    public static List<Catatan> getTransaksiByTanggal(LocalDate mulai, LocalDate selesai) {
-        List<Catatan> listCatatan = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM transaksi WHERE tanggal BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD'");
-        boolean filterMulai = mulai != null;
-        boolean filterSelesai = selesai != null;
+    // Hapus method getCatatanByDateRange() dan gunakan hanya satu method berikut:
+    public List<Catatan> getTransaksiByTanggal(LocalDate mulai, LocalDate selesai) {
+        List<Catatan> result = new ArrayList<>();
+        String username = SessionManager.getInstance().getUsername();
 
-        if (filterMulai && filterSelesai) {
-            sql.append(" WHERE tanggal BETWEEN ? AND ? ORDER BY tanggal ASC");
-        } else if (filterMulai) {
-            sql.append(" WHERE tanggal >= ? ORDER BY tanggal ASC");
-        } else if (filterSelesai) {
-            sql.append(" WHERE tanggal <= ? ORDER BY tanggal ASC");
-        } else {
-            sql.append(" ORDER BY tanggal ASC");
-        }
+        // Format 1: Prioritas utama - format yyyy-MM-dd
+        String sql = "SELECT * FROM transaksi " +
+                "WHERE username = ? " +
+                "AND (strftime('%Y-%m-%d', tanggal) BETWEEN ? AND ? " +
+                "     OR tanggal BETWEEN ? AND ?) " +
+                "ORDER BY tanggal ASC";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            // Format yyyy-MM-dd
+            String startDate1 = mulai.format(DateTimeFormatter.ISO_DATE);
+            String endDate1 = selesai.format(DateTimeFormatter.ISO_DATE);
 
-            if (filterMulai && filterSelesai) {
-                pstmt.setString(1, mulai.format(formatter));
-                pstmt.setString(2, selesai.format(formatter));
-            } else if (filterMulai) {
-                pstmt.setString(1, mulai.format(formatter));
-            } else if (filterSelesai) {
-                pstmt.setString(1, selesai.format(formatter));
-            }
+            // Format dd-MM-yyyy
+            String startDate2 = mulai.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            String endDate2 = selesai.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-            ResultSet rs = pstmt.executeQuery();
-            System.out.println("SQL Query: " + sql.toString());
-            System.out.println("Mulai: " + (mulai != null ? mulai.toString() : "null"));
-            System.out.println("Selesai: " + (selesai != null ? selesai.toString() : "null"));
+            stmt.setString(1, username);
+            stmt.setString(2, startDate1);
+            stmt.setString(3, endDate1);
+            stmt.setString(4, startDate2);
+            stmt.setString(5, endDate2);
 
+            System.out.println("Executing query: " + stmt.toString());
+
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                listCatatan.add(new Catatan(
+                String rawDate = rs.getString("tanggal");
+                System.out.println("Raw date from DB: " + rawDate); // Debug
+
+                // Coba semua format tanggal yang mungkin
+                String[] formats = {
+                        "yyyy-MM-dd", "dd-MM-yyyy",
+                        "yyyy/MM/dd", "dd/MM/yyyy",
+                        "yyyyMMdd", "ddMMyyyy"
+                };
+
+                String formattedDate = rawDate; // Default
+                for (String format : formats) {
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+                        LocalDate date = LocalDate.parse(rawDate, formatter);
+                        formattedDate = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                        break;
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+
+                result.add(new Catatan(
                         rs.getInt("id"),
-                        rs.getString("tanggal"),
+                        formattedDate,
                         rs.getString("jenis_transaksi"),
-                        String.valueOf(rs.getDouble("jumlah")),
+                        rs.getString("jumlah"),
                         rs.getString("kategori")
                 ));
             }
-
         } catch (SQLException e) {
+            System.err.println("SQL Error: " + e.getMessage());
             e.printStackTrace();
         }
 
-        return listCatatan;
+        System.out.println("Data found: " + result.size());
+        if (!result.isEmpty()) {
+            System.out.println("Contoh data pertama:");
+            Catatan first = result.get(0);
+            System.out.println("ID: " + first.getId());
+            System.out.println("Tanggal: " + first.getTanggal());
+            System.out.println("Jenis: " + first.getJenis_Transaksi());
+        }
+        return result;
     }
-
-
 
 }
