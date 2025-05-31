@@ -38,7 +38,6 @@ public class CatatanManager {
     public boolean tambahTransaksi(Catatan catatan) {
         String sql = "INSERT INTO transaksi (username, tanggal, jenis_transaksi, jumlah, kategori) VALUES (?, ?, ?, ?, ?)";
         String username = SessionManager.getInstance().getUsername();
-
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setString(1, username);
@@ -117,24 +116,33 @@ public class CatatanManager {
         return false;
     }
 
-    public Map<String, Double> getTotalPerKategori() {
-        Map<String, Double> data = new HashMap<>();
-        String sql = "SELECT kategori, SUM(jumlah) as total FROM transaksi GROUP BY kategori";
+    public Map<String, Double> getTotalPerKategoriByUsername(String username) {
+        Map<String, Double> result = new HashMap<>();
+
+        // Contoh query SQL
+        String sql = "SELECT kategori, SUM(jumlah) as total " +
+                "FROM transaksi " +
+                "WHERE username = ? " +
+                "GROUP BY kategori";
 
         try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            stmt.setString(1, username);
+
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                data.put(rs.getString("kategori"), rs.getDouble("total"));
+                String kategori = rs.getString("kategori");
+                double total = rs.getDouble("total");
+                result.put(kategori, total);
             }
-
         } catch (SQLException e) {
-            System.err.println("Gagal mengambil data kategori: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        return data;
+        return result;
     }
+
 
     // Hapus method getCatatanByDateRange() dan gunakan hanya satu method berikut:
     public List<Catatan> getTransaksiByTanggal(LocalDate mulai, LocalDate selesai) {
@@ -147,6 +155,24 @@ public class CatatanManager {
                 "AND (strftime('%Y-%m-%d', tanggal) BETWEEN ? AND ? " +
                 "     OR tanggal BETWEEN ? AND ?) " +
                 "ORDER BY tanggal ASC";
+
+
+    public static List<Catatan> getTransaksiByTanggal(LocalDate mulai, LocalDate selesai) {
+        List<Catatan> listCatatan = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM transaksi WHERE tanggal BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD'");
+        boolean filterMulai = mulai != null;
+        boolean filterSelesai = selesai != null;
+
+        if (filterMulai && filterSelesai) {
+            sql.append(" WHERE tanggal BETWEEN ? AND ? ORDER BY tanggal ASC");
+        } else if (filterMulai) {
+            sql.append(" WHERE tanggal >= ? ORDER BY tanggal ASC");
+        } else if (filterSelesai) {
+            sql.append(" WHERE tanggal <= ? ORDER BY tanggal ASC");
+        } else {
+            sql.append(" ORDER BY tanggal ASC");
+        }
+
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

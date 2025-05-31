@@ -503,16 +503,23 @@ public class BerandaViewController implements Initializable {
 
 
     private void updatePieChart() {
-        Map<String, Double> dataKategori = catatanManager.getTotalPerKategori();
+        String username = SessionManager.getInstance().getUsername();  // pastikan ini dapat username yg aktif
+        Map<String, Double> dataKategori = catatanManager.getTotalPerKategoriByUsername(username);
+
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
 
-        for (Map.Entry<String, Double> entry : dataKategori.entrySet()) {
-            pieChartData.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+        if (dataKategori.isEmpty()) {
+            pieChartData.add(new PieChart.Data("Data Tidak Tersedia", 1));
+        } else {
+            for (Map.Entry<String, Double> entry : dataKategori.entrySet()) {
+                pieChartData.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+            }
         }
 
         pieChart.setData(pieChartData);
-        pieChart.setTitle("Pie Chart");
+        pieChart.setTitle("Distribusi Transaksi per Kategori");
     }
+
 
 
 
@@ -637,8 +644,7 @@ public class BerandaViewController implements Initializable {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.close();
                 SessionManager.getInstance().logout();
-                HelloApplication.openViewWithModal("login-view", false);
-
+                Platform.runLater(() -> HelloApplication.openViewWithModal("login-view", false));
             }
         });
     }
