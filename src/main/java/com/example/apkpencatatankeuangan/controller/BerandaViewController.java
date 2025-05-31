@@ -47,7 +47,7 @@ import java.io.IOException;
 public class BerandaViewController implements Initializable {
 
     @FXML
-    private TableView<Catatan> table;
+    private TableView <Catatan> tableViewTransaksi;
     @FXML
     private ComboBox<String> comboKategoriFilter;
 
@@ -121,11 +121,17 @@ public class BerandaViewController implements Initializable {
 
         catatanObservableList = FXCollections.observableArrayList(catatanManager.getAllCatatan());
 
-        table.setItems(catatanObservableList);
+        tableViewTransaksi.setItems(catatanObservableList);
+        BatasanManager.muatBatasPengeluaranDariDB();
 
+        // Ambil nilai batas pengeluaran yang sudah dimuat
+        double batas = BatasanManager.getBatasPengeluaran();
+        // Set text label, misalnya dengan format "Rp {nilai}"
+        lblBatasan.setText(String.format("Rp %.2f", batas));
 //        datePickerFrom.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
 //        datePickerTo.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
-
+        datePickerFrom.valueProperty().addListener((obs, oldVal, newVal) -> filterByTanggal());
+        datePickerTo.valueProperty().addListener((obs, oldVal, newVal) -> filterByTanggal());
 // Listener untuk filter kategori dari ComboBox
 //        comboKategoriFilter.valueProperty().addListener((obs, oldVal, newVal) -> handleSearchByDate());
 
@@ -239,25 +245,66 @@ public class BerandaViewController implements Initializable {
     private void loadDataToForm(Catatan catatan) {
         if (catatan == null) return;
 
-        catatanSedangDiedit = catatan; // tandai ini data yg diedit
+        // Tandai bahwa data sedang diedit
+        catatanSedangDiedit = catatan;
 
-        // Set form input sesuai data yg diedit
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            // Konversi string tanggal "dd-MM-yyyy" ke LocalDate
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // Format disesuaikan
             LocalDate date = LocalDate.parse(catatan.getTanggal(), formatter);
             lblTanggal.setValue(date);
         } catch (Exception e) {
-            lblTanggal.setValue(null);
+            // Jika parsing gagal, tampilkan pesan log untuk debugging
+            System.out.println("Error parsing date: " + catatan.getTanggal());
+            e.printStackTrace();
+            lblTanggal.setValue(null); // Reset nilai tanggal jika parsing gagal
         }
 
+        // Atur nilai pada input lainnya
         cdJnsTransaksi.setValue(catatan.getJenis_Transaksi());
         cdKategori.setValue(catatan.getKategori());
         lblJumlah.setText(catatan.getJumlah());
 
+        // Pastikan tabel diperbarui jika diperlukan
+        tableViewTransaksi.refresh();
 
-        // Bisa juga ubah tombol "Tambah" jadi "Update" jika ingin
+        // Ubah label tombol "Tambah" menjadi "Update"
         btnTambahTransaksi.setText("Update");
     }
+
+
+
+    private void filterByTanggal() {
+        LocalDate mulai = datePickerFrom.getValue();
+        LocalDate selesai = datePickerTo.getValue();
+
+        if (mulai == null || selesai == null) {
+            System.out.println("Tanggal mulai atau selesai belum dipilih.");
+            return;
+        }
+
+        if (mulai.isAfter(selesai)) {
+            System.out.println("Tanggal mulai tidak boleh lebih besar dari tanggal selesai.");
+            return;
+        }
+
+        // Ambil data sesuai filter tanggal
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+// Memanggil metode dengan LocalDate
+            List<Catatan> data = CatatanManager.getTransaksiByTanggal(mulai, selesai);
+
+// Mengupdate tabel dengan data yang difilter
+            tableViewTransaksi.setItems(FXCollections.observableArrayList(data));
+
+
+            // Set data ke tabel
+            tableViewTransaksi.setItems(FXCollections.observableArrayList(data));
+        } catch (Exception e) {
+            System.out.println("Gagal memfilter data: " + e.getMessage());
+        }
+    }
+
 
 
 
@@ -530,7 +577,8 @@ public class BerandaViewController implements Initializable {
         lblTanggal.setValue(null);                  // Kosongkan tanggal
         cdJnsTransaksi.getSelectionModel().clearSelection(); // Kosongkan jenis transaksi
         cdKategori.getItems().clear();             // Kosongkan kategori
-        lblJumlah.clear();                         // Kosongkan jumlah
+        lblJumlah.clear();
+        btnTambahTransaksi.setText("Tambah Transaksi");// Kosongkan jumlah
     }
 
     @FXML

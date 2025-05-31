@@ -78,7 +78,7 @@
             </Button>
             </children>
         </GridPane>
-        <TableView fx:id="table" layoutX="158.0" layoutY="328.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="385.0" prefWidth="619.0">
+        <TableView fx:id="tableViewTransaksi" layoutX="158.0" layoutY="328.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="385.0" prefWidth="619.0">
             <columns>
                 <TableColumn fx:id="Tanggal" prefWidth="118.0" text="Tanggal" />
                 <TableColumn fx:id="Jenis_Transaksi" prefWidth="105.99993896484375" text="Jenis Transaksi" />
