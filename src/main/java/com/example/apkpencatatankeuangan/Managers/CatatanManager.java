@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -145,77 +146,33 @@ public class CatatanManager {
 
 
     // Hapus method getCatatanByDateRange() dan gunakan hanya satu method berikut:
-    public List<Catatan> getTransaksiByTanggal(LocalDate mulai, LocalDate selesai) {
+
+    public List<Catatan> getTransaksiByTanggal(LocalDate tanggalFilter) {
         List<Catatan> result = new ArrayList<>();
         String username = SessionManager.getInstance().getUsername();
 
-        // Format 1: Prioritas utama - format yyyy-MM-dd
+        // Query untuk filter berdasarkan tanggal spesifik
         String sql = "SELECT * FROM transaksi " +
                 "WHERE username = ? " +
-                "AND (strftime('%Y-%m-%d', tanggal) BETWEEN ? AND ? " +
-                "     OR tanggal BETWEEN ? AND ?) " +
+                "AND date(tanggal) = date(?) " +
                 "ORDER BY tanggal ASC";
-
-
-    public static List<Catatan> getTransaksiByTanggal(LocalDate mulai, LocalDate selesai) {
-        List<Catatan> listCatatan = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM transaksi WHERE tanggal BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD'");
-        boolean filterMulai = mulai != null;
-        boolean filterSelesai = selesai != null;
-
-        if (filterMulai && filterSelesai) {
-            sql.append(" WHERE tanggal BETWEEN ? AND ? ORDER BY tanggal ASC");
-        } else if (filterMulai) {
-            sql.append(" WHERE tanggal >= ? ORDER BY tanggal ASC");
-        } else if (filterSelesai) {
-            sql.append(" WHERE tanggal <= ? ORDER BY tanggal ASC");
-        } else {
-            sql.append(" ORDER BY tanggal ASC");
-        }
-
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Format yyyy-MM-dd
-            String startDate1 = mulai.format(DateTimeFormatter.ISO_DATE);
-            String endDate1 = selesai.format(DateTimeFormatter.ISO_DATE);
-
-            // Format dd-MM-yyyy
-            String startDate2 = mulai.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            String endDate2 = selesai.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            // Format parameter query sebagai yyyy-MM-dd
+            String filterDate = tanggalFilter.format(DateTimeFormatter.ISO_DATE);
 
             stmt.setString(1, username);
-            stmt.setString(2, startDate1);
-            stmt.setString(3, endDate1);
-            stmt.setString(4, startDate2);
-            stmt.setString(5, endDate2);
+            stmt.setString(2, filterDate);
 
             System.out.println("Executing query: " + stmt.toString());
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                String rawDate = rs.getString("tanggal");
-                System.out.println("Raw date from DB: " + rawDate); // Debug
-
-                // Coba semua format tanggal yang mungkin
-                String[] formats = {
-                        "yyyy-MM-dd", "dd-MM-yyyy",
-                        "yyyy/MM/dd", "dd/MM/yyyy",
-                        "yyyyMMdd", "ddMMyyyy"
-                };
-
-                String formattedDate = rawDate; // Default
-                for (String format : formats) {
-                    try {
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-                        LocalDate date = LocalDate.parse(rawDate, formatter);
-                        formattedDate = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                        break;
-                    } catch (Exception e) {
-                        continue;
-                    }
-                }
+                // Format output sebagai dd-MM-yyyy
+                LocalDate dbDate = LocalDate.parse(rs.getString("tanggal"));
+                String formattedDate = dbDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
                 result.add(new Catatan(
                         rs.getInt("id"),
@@ -228,9 +185,12 @@ public class CatatanManager {
         } catch (SQLException e) {
             System.err.println("SQL Error: " + e.getMessage());
             e.printStackTrace();
+        } catch (DateTimeParseException e) {
+            System.err.println("Date Format Error: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        System.out.println("Data found: " + result.size());
+        System.out.println("Data found for date " + tanggalFilter + ": " + result.size());
         if (!result.isEmpty()) {
             System.out.println("Contoh data pertama:");
             Catatan first = result.get(0);
@@ -240,5 +200,5 @@ public class CatatanManager {
         }
         return result;
     }
-
 }
+

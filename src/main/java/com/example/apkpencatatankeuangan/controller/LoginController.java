@@ -65,7 +65,7 @@ public class LoginController {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.close();
                 HelloApplication.setRoot("beranda2-view", true);
-                HelloApplication.openViewWithModal("beranda2-view", true);
+                Platform.runLater(() -> HelloApplication.openViewWithModal("beranda2-view", false));
             }else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setHeaderText("Login Failed");

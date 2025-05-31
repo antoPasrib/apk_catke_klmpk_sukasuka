@@ -221,16 +221,11 @@
                 </GridPane>
             </children>
         </GridPane>
-        <MenuBar layoutX="-2.0" prefHeight="25.0" prefWidth="132.1">
+        <MenuBar layoutY="-1.0" prefHeight="26.0" prefWidth="130.0">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
                         <MenuItem mnemonicParsing="false" text="Close" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
@@ -304,10 +299,9 @@
       </GridPane>
         <Button fx:id="btnTambahTransaksi" layoutX="257.0" layoutY="246.0" mnemonicParsing="false" onAction="#onActionTambahTransaksi" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #2ECC71; -fx-background-radius: 8; -fx-font-weight: bold;" text="+ Tambah Transaksi" textFill="WHITE" />
       <Button fx:id="btnBersihkan" layoutX="453.0" layoutY="246.0" mnemonicParsing="false" onAction="#handleBersihkan" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #F7AD45; -fx-background-radius: 8; -fx-font-weight: bold;" text="Bersihkan" textFill="WHITE" />
-        <Button fx:id="btnResetFilter" layoutX="532.0" layoutY="303.0" mnemonicParsing="false" onAction="#resetFilter" prefHeight="25.0" prefWidth="58.0" text="Reset" />
-      <DatePicker fx:id="datePickerFrom" layoutX="157.0" layoutY="303.0" prefHeight="25.0" prefWidth="163.0" promptText="Dari tanggal" />
-      <DatePicker fx:id="datePickerTo" layoutX="317.0" layoutY="303.0" prefHeight="19.0" prefWidth="155.0" promptText="Sampai tanggal" />
-      <Button fx:id="btnCariTransaksi" layoutX="468.0" layoutY="303.0" mnemonicParsing="false" onAction="#onActionCariTransaksi" prefHeight="25.0" prefWidth="58.0" text="Cari" />
-      <ComboBox fx:id="comboKategoriFilter" layoutX="628.0" layoutY="304.0" prefWidth="150.0" />
+        <Button fx:id="btnResetFilter" layoutX="389.0" layoutY="304.0" mnemonicParsing="false" onAction="#resetFilter" prefHeight="25.0" prefWidth="58.0" text="Reset" />
+        <DatePicker fx:id="datePicker" layoutX="158.0" layoutY="304.0" />
+      <Button fx:id="btnCariTransaksi" layoutX="333.0" layoutY="304.0" mnemonicParsing="false" onAction="#onActionCariTransaksi" prefHeight="25.0" prefWidth="58.0" text="Cari" />
+      <ComboBox fx:id="comboKategoriFilter" layoutX="626.0" layoutY="304.0" prefWidth="150.0" promptText="Kategori" />
     </children>
 </AnchorPane>
