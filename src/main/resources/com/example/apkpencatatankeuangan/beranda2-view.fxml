@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #FFFF;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apkpencatatankeuangan.controller.BerandaViewController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #FFFF;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apkpencatatankeuangan.controller.BerandaViewController">
     <children>
         <GridPane layoutX="-7.0" layoutY="-4.0" prefHeight="726.0" prefWidth="137.0" style="-fx-background-color: #27548A;">
             <columnConstraints>
@@ -299,9 +285,8 @@
       </GridPane>
         <Button fx:id="btnTambahTransaksi" layoutX="257.0" layoutY="246.0" mnemonicParsing="false" onAction="#onActionTambahTransaksi" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #2ECC71; -fx-background-radius: 8; -fx-font-weight: bold;" text="+ Tambah Transaksi" textFill="WHITE" />
       <Button fx:id="btnBersihkan" layoutX="453.0" layoutY="246.0" mnemonicParsing="false" onAction="#handleBersihkan" prefHeight="38.0" prefWidth="166.0" style="-fx-background-color: #F7AD45; -fx-background-radius: 8; -fx-font-weight: bold;" text="Bersihkan" textFill="WHITE" />
-        <Button fx:id="btnResetFilter" layoutX="389.0" layoutY="304.0" mnemonicParsing="false" onAction="#resetFilter" prefHeight="25.0" prefWidth="58.0" text="Reset" />
+        <Button fx:id="btnResetFilter" layoutX="340.0" layoutY="304.0" mnemonicParsing="false" onAction="#resetFilter" prefHeight="25.0" prefWidth="58.0" text="Reset" />
         <DatePicker fx:id="datePicker" layoutX="158.0" layoutY="304.0" />
-      <Button fx:id="btnCariTransaksi" layoutX="333.0" layoutY="304.0" mnemonicParsing="false" onAction="#onActionCariTransaksi" prefHeight="25.0" prefWidth="58.0" text="Cari" />
       <ComboBox fx:id="comboKategoriFilter" layoutX="626.0" layoutY="304.0" prefWidth="150.0" promptText="Kategori" />
     </children>
 </AnchorPane>

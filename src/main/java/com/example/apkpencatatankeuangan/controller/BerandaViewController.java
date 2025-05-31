@@ -107,8 +107,7 @@ public class BerandaViewController implements Initializable {
     @FXML
     private ObservableList<Catatan> catatanObservableList;
     private CatatanManager catatanManager;
-    @FXML
-    private Button btnCariTransaksi;
+
 
     @FXML
     private TableView<Catatan> tabelCatatan;
@@ -133,7 +132,7 @@ public class BerandaViewController implements Initializable {
         BatasanManager.muatBatasPengeluaranDariDB();
 
         // Tambahkan ini di method initialize()
-        btnCariTransaksi.setOnAction(e -> filterByTanggal());
+
 
         // Inisialisasi combo box filter kategori
         comboKategoriFilter.getItems().addAll("Semua", "Gaji", "Bonus", "Traveling", "Belanja", "Makanan", "Transportasi");
@@ -146,6 +145,7 @@ public class BerandaViewController implements Initializable {
         double batas = BatasanManager.getBatasPengeluaran();
         // Set text label, misalnya dengan format "Rp {nilai}"
         lblBatasan.setText(String.format("Rp %.2f", batas));
+        refreshData();
         // Di akhir initialize()
         Platform.runLater(() -> {
             refreshData();
@@ -453,7 +453,7 @@ public class BerandaViewController implements Initializable {
 
                     // Reset editing
                     catatanSedangDiedit = null;
-                    btnTambahTransaksi.setText("Tambah");
+                    btnTambahTransaksi.setText("+ Tambah Transaksi");
                 } else {
                     showAlert("Gagal memperbarui transaksi.");
                 }
@@ -477,7 +477,7 @@ public class BerandaViewController implements Initializable {
         cdKategori.setItems(FXCollections.observableArrayList());
         isEditMode = false;
         catatanSedangDiedit = null;
-        btnTambahTransaksi.setText("Tambah Transaksi");
+        btnTambahTransaksi.setText("+ Tambah Transaksi");
     }
 
     private void updateSummary() {
@@ -656,7 +656,8 @@ public class BerandaViewController implements Initializable {
         cdJnsTransaksi.getSelectionModel().clearSelection(); // Kosongkan jenis transaksi
         cdKategori.getItems().clear();             // Kosongkan kategori
         lblJumlah.clear();
-        btnTambahTransaksi.setText("Tambah Transaksi");// Kosongkan jumlah
+        btnTambahTransaksi.setText("+ Tambah Transaksi");// Kosongkan jumlah
+        isEditMode = false;
     }
 
     @FXML
