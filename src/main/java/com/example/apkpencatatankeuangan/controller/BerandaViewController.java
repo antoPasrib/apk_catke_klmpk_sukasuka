@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 public class BerandaViewController implements Initializable {
 
     @FXML
-    private TableView <Catatan> tableViewTransaksi;
+    private TableView<Catatan> tableViewTransaksi;
     @FXML
     private ComboBox<String> comboKategoriFilter;
 
@@ -63,10 +63,8 @@ public class BerandaViewController implements Initializable {
     @FXML
     private TableColumn<Catatan, String> Kategori;
     @FXML
-    private DatePicker datePickerFrom;
+    private DatePicker datePicker;
 
-    @FXML
-    private DatePicker datePickerTo;
 
     @FXML
     private TableColumn<Catatan, String> Tanggal;
@@ -88,7 +86,7 @@ public class BerandaViewController implements Initializable {
     private DatePicker lblTanggal;
 
     @FXML
-    private Label lblPemasukan, lblPengeluaran, lblSisaUang ;
+    private Label lblPemasukan, lblPengeluaran, lblSisaUang;
     @FXML
     private Label lblBatasan;
     @FXML
@@ -119,6 +117,7 @@ public class BerandaViewController implements Initializable {
     // Format mata uang Indonesia
     private final NumberFormat rupiahFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
     private BatasanListener batasanListener;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         username.setText(SessionManager.getInstance().getUsername());
@@ -147,18 +146,19 @@ public class BerandaViewController implements Initializable {
         double batas = BatasanManager.getBatasPengeluaran();
         // Set text label, misalnya dengan format "Rp {nilai}"
         lblBatasan.setText(String.format("Rp %.2f", batas));
+        // Di akhir initialize()
+        Platform.runLater(() -> {
+            refreshData();
+        });
+
+// Method refresh
 
         // Set nilai default tanggal (opsional)
-        datePickerFrom.setValue(LocalDate.now().withDayOfMonth(1)); // Tanggal awal bulan
-        datePickerTo.setValue(LocalDate.now()); // Tanggal hari ini
-        datePickerFrom.setValue(null);
-        datePickerTo.setValue(null);
-        catatanObservableList.setAll(catatanManager.getAllCatatan());
-
-// Atau biarkan kosong
-        datePickerFrom.setPromptText("Dari tanggal");
-        datePickerTo.setPromptText("Sampai tanggal");
-
+        datePicker.valueProperty().addListener((obs, oldDate, newDate) -> {
+            if (newDate != null) {
+                filterTransaksi();
+            }
+        });
         Callback<TableColumn<Catatan, Void>, TableCell<Catatan, Void>> cellFactory = new Callback<>() {
             @Override
             public TableCell<Catatan, Void> call(final TableColumn<Catatan, Void> param) {
@@ -261,7 +261,11 @@ public class BerandaViewController implements Initializable {
         updateSummary();
         updatePieChart();
     }
-
+    private void refreshData() {
+        List<Catatan> newData = catatanManager.getAllCatatan();
+        catatanObservableList.setAll(newData);
+        tableViewTransaksi.refresh();
+    }
     // simpan data yang sedang diedit
     private void loadDataToForm(Catatan catatan) {
         if (catatan == null) return;
@@ -296,12 +300,11 @@ public class BerandaViewController implements Initializable {
     @FXML
     private void filterByTanggal() {
         try {
-            LocalDate startDate = datePickerFrom.getValue();
-            LocalDate endDate = datePickerTo.getValue();
+            LocalDate selectedDate = datePicker.getValue(); // Menggunakan datePicker tunggal
 
             System.out.println("=== DEBUG FILTER ===");
             System.out.println("Username: " + SessionManager.getInstance().getUsername());
-            System.out.println("Rentang tanggal: " + startDate + " hingga " + endDate);
+            System.out.println("Tanggal yang dipilih: " + selectedDate);
 
             List<Catatan> allData = catatanManager.getAllCatatan();
             System.out.println("Total data tersedia: " + allData.size());
@@ -309,19 +312,21 @@ public class BerandaViewController implements Initializable {
                     System.out.println(c.getId() + " | " + c.getTanggal() + " | " + c.getJenis_Transaksi())
             );
 
-            List<Catatan> hasil = catatanManager.getTransaksiByTanggal(startDate, endDate);
+            // Memanggil method yang sudah dimodifikasi (filter per tanggal tunggal)
+            List<Catatan> hasil = catatanManager.getTransaksiByTanggal(selectedDate);
 
             Platform.runLater(() -> {
                 catatanObservableList.setAll(hasil);
                 tableViewTransaksi.refresh();
 
                 if (hasil.isEmpty()) {
-                    showAlert("Informasi", "Tidak ada transaksi pada rentang tanggal tersebut");
+                    showAlert("Informasi", "Tidak ada transaksi pada tanggal " +
+                            selectedDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
                     System.out.println("=== DEBUG: DATA TIDAK DITEMUKAN ===");
                     System.out.println("Penyebab mungkin:");
-                    System.out.println("1. Format tanggal di database tidak sesuai");
-                    System.out.println("2. Data tidak milik user ini");
-                    System.out.println("3. Rentang tanggal tidak mencakup data");
+                    System.out.println("1. Tidak ada transaksi pada tanggal tersebut");
+                    System.out.println("2. Format tanggal di database tidak sesuai");
+                    System.out.println("3. Data tidak milik user ini");
                 } else {
                     updateSummary();
                     updatePieChart();
@@ -350,8 +355,7 @@ public class BerandaViewController implements Initializable {
 
     @FXML
     private void resetFilter() {
-        datePickerFrom.setValue(null);
-        datePickerTo.setValue(null);
+        datePicker.setValue(null); // Menggunakan datePicker tunggal
         comboKategoriFilter.getSelectionModel().clearSelection();
 
         // Tampilkan semua data
@@ -361,8 +365,7 @@ public class BerandaViewController implements Initializable {
     }
 
     private void filterTransaksi() {
-        LocalDate mulai = datePickerFrom.getValue();
-        LocalDate selesai = datePickerTo.getValue();
+        LocalDate selectedDate = datePicker.getValue(); // Menggunakan datePicker tunggal
         String kategori = comboKategoriFilter.getValue();
 
         List<Catatan> allData = catatanManager.getAllCatatan();
@@ -372,13 +375,13 @@ public class BerandaViewController implements Initializable {
             boolean matchTanggal = true;
             boolean matchKategori = true;
 
-            // Filter tanggal
-            if (mulai != null && selesai != null) {
+            // Filter tanggal (tunggal)
+            if (selectedDate != null) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                     LocalDate tanggalCatatan = LocalDate.parse(catatan.getTanggal(), formatter);
 
-                    if (tanggalCatatan.isBefore(mulai) || tanggalCatatan.isAfter(selesai)) {
+                    if (!tanggalCatatan.isEqual(selectedDate)) {
                         matchTanggal = false;
                     }
                 } catch (Exception e) {
@@ -386,7 +389,7 @@ public class BerandaViewController implements Initializable {
                 }
             }
 
-            // Filter kategori
+            // Filter kategori (tetap sama)
             if (kategori != null && !kategori.isEmpty() && !kategori.equals("Semua")) {
                 if (!catatan.getKategori().equalsIgnoreCase(kategori)) {
                     matchKategori = false;
@@ -399,8 +402,12 @@ public class BerandaViewController implements Initializable {
         }
 
         catatanObservableList.setAll(filtered);
-        updateSummary();
-        updatePieChart();
+        if (filtered.isEmpty()) {
+            showAlert("Informasi", "Tidak ditemukan transaksi dengan filter yang dipilih");
+        } else {
+            updateSummary();
+            updatePieChart();
+        }
     }
 
     @FXML
@@ -521,8 +528,6 @@ public class BerandaViewController implements Initializable {
     }
 
 
-
-
     @FXML
     private void onActionBatasan(ActionEvent event) {
         URL resource = getClass().getResource("/com/example/apkpencatatankeuangan/Batasan_fxml.fxml");
@@ -587,8 +592,6 @@ public class BerandaViewController implements Initializable {
     }
 
 
-
-
     @FXML
     private void onActionTambahTransaksi(ActionEvent event) {
         String jenis = cdJnsTransaksi.getValue();
@@ -625,8 +628,6 @@ public class BerandaViewController implements Initializable {
     }
 
 
-
-
     @FXML
     private void onActionLogOut(ActionEvent event) {
         // Create a new alert with type Confirmation
@@ -648,6 +649,7 @@ public class BerandaViewController implements Initializable {
             }
         });
     }
+
     @FXML
     private void handleBersihkan() {
         lblTanggal.setValue(null);                  // Kosongkan tanggal
@@ -704,13 +706,18 @@ public class BerandaViewController implements Initializable {
     @FXML
     private void onActionCariTransaksi(ActionEvent event) {
         try {
-            List<Catatan> hasil = catatanManager.getTransaksiByTanggal(
-                    datePickerFrom.getValue(), // Langsung pakai LocalDate
-                    datePickerTo.getValue()
-            );
+            LocalDate selectedDate = datePicker.getValue(); // Use single date picker
+
+            if (selectedDate == null) {
+                showAlert("Peringatan", "Silakan pilih tanggal terlebih dahulu");
+                return;
+            }
+
+            List<Catatan> hasil = catatanManager.getTransaksiByTanggal(selectedDate);
 
             if (hasil.isEmpty()) {
-                showAlert("Info", "Tidak ada transaksi pada rentang tanggal tersebut");
+                showAlert("Info", "Tidak ada transaksi pada tanggal " +
+                        selectedDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
             }
 
             tableViewTransaksi.setItems(FXCollections.observableArrayList(hasil));
