@@ -6,6 +6,7 @@ import com.example.apkpencatatankeuangan.Managers.BatasanListener;
 import com.example.apkpencatatankeuangan.Managers.BatasanManager;
 import com.example.apkpencatatankeuangan.Managers.CatatanManager;
 import com.example.apkpencatatankeuangan.controller.SessionManager;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -567,8 +568,7 @@ public class BerandaViewController implements Initializable {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.close();
                 SessionManager.getInstance().logout();
-                HelloApplication.openViewWithModal("login-view", false);
-
+                Platform.runLater(() -> HelloApplication.openViewWithModal("login-view", false));
             }
         });
     }
