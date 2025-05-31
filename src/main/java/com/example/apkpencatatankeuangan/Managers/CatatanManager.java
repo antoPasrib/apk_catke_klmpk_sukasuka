@@ -1,8 +1,11 @@
 package com.example.apkpencatatankeuangan.Managers;
 
 import com.example.apkpencatatankeuangan.Data.Catatan;
+import com.example.apkpencatatankeuangan.controller.SessionManager;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +18,12 @@ public class CatatanManager {
     }
 
     private void buatTabelJikaBelumAda() {
-        String sql = "CREATE TABLE IF NOT EXISTS transaksi(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+        String sql = "CREATE TABLE IF NOT EXISTS transaksi (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "username TEXT NOT NULL, " +
                 "tanggal DATE NOT NULL, " +
-                "jenis_transaksi TEXT NOT NULL," +
-                "jumlah REAL NOT NULL," +
+                "jenis_transaksi TEXT NOT NULL, " +
+                "jumlah REAL NOT NULL, " +
                 "kategori TEXT NOT NULL)";
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -30,13 +34,16 @@ public class CatatanManager {
     }
 
     public boolean tambahTransaksi(Catatan catatan) {
-        String sql = "INSERT INTO transaksi (tanggal, jenis_transaksi, jumlah, kategori) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO transaksi (username, tanggal, jenis_transaksi, jumlah, kategori) VALUES (?, ?, ?, ?, ?)";
+        String username = SessionManager.getInstance().getUsername();
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setString(1, catatan.getTanggal());
-            psmt.setString(2, catatan.getJenis_Transaksi());
-            psmt.setDouble(3, Double.parseDouble(catatan.getJumlah()));
-            psmt.setString(4, catatan.getKategori());
+            psmt.setString(1, username);
+            psmt.setString(2, catatan.getTanggal());
+            psmt.setString(3, catatan.getJenis_Transaksi());
+            psmt.setDouble(4, Double.parseDouble(catatan.getJumlah()));
+            psmt.setString(5, catatan.getKategori());
             psmt.executeUpdate();
             System.out.println("Transaksi berhasil ditambahkan");
             return true;
@@ -51,10 +58,13 @@ public class CatatanManager {
 
     public ArrayList<Catatan> getAllCatatan() {
         ArrayList<Catatan> listCatatan = new ArrayList<>();
-        String sql = "SELECT * FROM transaksi ";
+        String sql = "SELECT * FROM transaksi WHERE username = ?";
+        String username = SessionManager.getInstance().getUsername();
+
         try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 listCatatan.add(new Catatan(
@@ -70,6 +80,7 @@ public class CatatanManager {
         }
         return listCatatan;
     }
+
 
     public boolean updateCatatan(Catatan catatan) {
         String sql = "UPDATE transaksi SET tanggal = ?, jenis_transaksi = ?, jumlah = ?, kategori = ? WHERE id = ?";
@@ -123,61 +134,43 @@ public class CatatanManager {
         return data;
     }
 
-    public List<Catatan> getCatatanByDateRange(String fromDate, String toDate) {
-        List<Catatan> list = new ArrayList<>();
-        String sql = "SELECT * FROM transaksi WHERE tanggal BETWEEN ? AND ? ORDER BY tanggal";
+    public static List<Catatan> getTransaksiByTanggal(LocalDate mulai, LocalDate selesai) {
+        List<Catatan> listCatatan = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM transaksi WHERE tanggal BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD'");
+        boolean filterMulai = mulai != null;
+        boolean filterSelesai = selesai != null;
+
+        if (filterMulai && filterSelesai) {
+            sql.append(" WHERE tanggal BETWEEN ? AND ? ORDER BY tanggal ASC");
+        } else if (filterMulai) {
+            sql.append(" WHERE tanggal >= ? ORDER BY tanggal ASC");
+        } else if (filterSelesai) {
+            sql.append(" WHERE tanggal <= ? ORDER BY tanggal ASC");
+        } else {
+            sql.append(" ORDER BY tanggal ASC");
+        }
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
 
-            pstmt.setString(1, fromDate);
-            pstmt.setString(2, toDate);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            if (filterMulai && filterSelesai) {
+                pstmt.setString(1, mulai.format(formatter));
+                pstmt.setString(2, selesai.format(formatter));
+            } else if (filterMulai) {
+                pstmt.setString(1, mulai.format(formatter));
+            } else if (filterSelesai) {
+                pstmt.setString(1, selesai.format(formatter));
+            }
+
             ResultSet rs = pstmt.executeQuery();
+            System.out.println("SQL Query: " + sql.toString());
+            System.out.println("Mulai: " + (mulai != null ? mulai.toString() : "null"));
+            System.out.println("Selesai: " + (selesai != null ? selesai.toString() : "null"));
 
             while (rs.next()) {
-                list.add(new Catatan(
-                        rs.getInt("id"),
-                        rs.getString("tanggal"),
-                        rs.getString("jenis_transaksi"),
-                        String.valueOf(rs.getDouble("jumlah")),
-                        rs.getString("kategori")
-                ));
-            }
-        } catch (SQLException e) {
-            System.err.println("Gagal mengambil data transaksi per tanggal: " + e.getMessage());
-        }
-
-        return list;
-    }
-
-    public List<Catatan> getCatatanByFilter(String dari, String sampai, String kategori) {
-        List<Catatan> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM transaksi WHERE 1=1");
-        List<Object> params = new ArrayList<>();
-
-        if (dari != null && !dari.isEmpty()) {
-            sql.append(" AND tanggal >= ?");
-            params.add(dari);
-        }
-        if (sampai != null && !sampai.isEmpty()) {
-            sql.append(" AND tanggal <= ?");
-            params.add(sampai);
-        }
-        if (kategori != null && !kategori.isEmpty()) {
-            sql.append(" AND kategori LIKE ?");
-            params.add("%" + kategori + "%");
-        }
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
-
-            for (int i = 0; i < params.size(); i++) {
-                stmt.setObject(i + 1, params.get(i));
-            }
-
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                list.add(new Catatan(
+                listCatatan.add(new Catatan(
                         rs.getInt("id"),
                         rs.getString("tanggal"),
                         rs.getString("jenis_transaksi"),
@@ -190,6 +183,9 @@ public class CatatanManager {
             e.printStackTrace();
         }
 
-        return list;
+        return listCatatan;
     }
+
+
+
 }

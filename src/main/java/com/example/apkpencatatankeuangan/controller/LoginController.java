@@ -65,21 +65,21 @@ public class LoginController {
                 stage.close();
                 HelloApplication.setRoot("beranda2-view", true);
 
-        }else {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            }else {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("Login Failed");
+                    alert.setContentText("Username or Password is incorrect");
+                    alert.show();
+                }
+            }catch (Exception e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("Login Failed");
-                alert.setContentText("Username or Password is incorrect");
-                alert.show();
-            }
-        }catch (Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Login Failed");
-            alert.setContentText("Terjadi Kesalahan");
-            e.printStackTrace();
+                alert.setContentText("Terjadi Kesalahan");
+                e.printStackTrace();
 
-        }
-        finally {
-            DBConnection.closeConnection();
-        }
-        }
+            }
+            finally {
+                DBConnection.closeConnection();
+            }
+    }
 }
