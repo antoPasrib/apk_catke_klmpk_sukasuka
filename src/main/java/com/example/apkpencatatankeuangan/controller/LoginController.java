@@ -2,6 +2,7 @@ package com.example.apkpencatatankeuangan.controller;
 
 import com.example.apkpencatatankeuangan.HelloApplication;
 import com.example.apkpencatatankeuangan.Managers.DBConnection;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
@@ -41,7 +42,7 @@ public class LoginController {
         alert.showAndWait();
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
-        HelloApplication.openViewWithModal("register-view", true);
+        Platform.runLater(() -> HelloApplication.openViewWithModal("register-view", false));
     }
 
 
@@ -64,7 +65,7 @@ public class LoginController {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.close();
                 HelloApplication.setRoot("beranda2-view", true);
-
+                HelloApplication.openViewWithModal("beranda2-view", true);
             }else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setHeaderText("Login Failed");
